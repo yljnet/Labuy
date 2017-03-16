@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/addr_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:layout_margin="10dp">
+
+        <CheckBox
+            android:id="@+id/id_select_addr_cb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/id_consignee_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="收件人：虞礼江" />
+
+        <TextView
+            android:id="@+id/id_mobile_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_toLeftOf="@id/id_select_addr_cb"
+            android:layout_marginTop="5dp"
+            android:text="手机号码：12345678998" />
+
+        <TextView
+            android:id="@+id/id_address_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="6dp"
+            android:layout_toLeftOf="@id/id_select_addr_cb"
+            android:text="收货地址：浙江省杭州市拱墅区莫干山路187号易盛大厦11楼技术部" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/secondary_text_dark" />
+    </RelativeLayout>
+</LinearLayout>

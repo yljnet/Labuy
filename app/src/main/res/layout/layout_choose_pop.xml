@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/id_un_select_option_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:padding="5dp"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cardview_dark_background" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/id_yq_option_list"
+        android:layout_width="match_parent"
+        android:layout_height="260dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <TextView
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="购买数量"
+            android:textColor="#000"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/id_add_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_add_black_24dp" />
+
+        <TextView
+            android:id="@+id/id_num_text"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/id_add_num"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="#000"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/id_minus_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/id_num_text"
+            android:src="@drawable/ic_remove_black_24dp" />
+    </RelativeLayout>
+
+    <include layout="@layout/layout_button_bottom" />
+</LinearLayout>

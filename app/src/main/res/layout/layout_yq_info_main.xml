@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/secondary_text_dark"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/id_choose_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/id_yq_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:padding="10dp"
+            android:text="产品名称"
+            android:textColor="#000"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/id_yq_pic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            android:src="@drawable/loading" />
+
+        <TextView
+            android:id="@+id/id_yq_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="价格"
+            android:textColor="@android:color/holo_red_light"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff">
+
+            <TextView
+                android:id="@+id/id_country_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="中国" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:background="@color/secondary_text_dark" />
+
+            <TextView
+                android:id="@+id/id_cate_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="气相色谱仪" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/id_yq_options"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:lines="1"
+            android:layout_marginTop="5dp"
+            android:drawableRight="@drawable/ic_more_horiz_black_36dp"
+            android:gravity="center_vertical"
+            android:padding="10dp" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="确认订单"
+            android:textColor="#000" />
+    </android.support.v7.widget.Toolbar>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/toolbar"
+        android:background="@color/secondary_text_dark" />
+
+    <RelativeLayout
+        android:id="@+id/addr_layout"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_below="@id/toolbar">
+
+        <ImageView
+            android:id="@+id/id_locat"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_location_on_black_24dp" />
+
+        <ImageView
+            android:id="@+id/id_next_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/next" />
+
+        <include
+            layout="@layout/address"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/id_locat"
+            android:layout_toLeftOf="@id/id_next_pic"
+            android:layout_toRightOf="@id/id_locat"
+            android:layout_toStartOf="@id/id_next_pic" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_below="@id/addr_layout"
+        android:layout_marginTop="5dp"
+        android:background="@color/secondary_text_dark" />
+
+    <RelativeLayout
+        android:id="@+id/ll_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:id="@+id/id_order_count_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:padding="5dp"
+            android:text="1"
+            android:textColor="#000" />
+
+        <Button
+            android:id="@+id/id_submit_order_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@android:color/holo_red_light"
+            android:text="提交订单"
+            android:textColor="#fff" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/id_order_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/addr_layout"
+        android:layout_above="@id/ll_bottom"
+        android:layout_marginTop="15dp" />
+
+</RelativeLayout>
