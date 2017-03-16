@@ -86,7 +86,6 @@ public class ShoppingCartFragment extends Fragment {
             public void onClick(View view) {
                 if (selectCount > 0){
                     Intent intent = new Intent(getActivity(), ConfirmOrderActivity.class);
-
                     startActivity(intent);
                 }
             }

@@ -26,6 +26,7 @@ import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -70,8 +71,8 @@ public class PublicFunc {
 
     public static void toLogin(Activity activity, int index) {
         Intent intent = new Intent(activity, LoginActivity.class);
-        intent.putExtra("index",index);
-        activity.startActivityForResult(intent,1);
+        intent.putExtra("index", index);
+        activity.startActivityForResult(intent, 1);
     }
 
     public static void saveData(String account, String password, String aToken) {
@@ -107,6 +108,7 @@ public class PublicFunc {
 
     /**
      * 提交订单
+     *
      * @param token
      * @param orderInfo
      * @param callback
@@ -173,7 +175,7 @@ public class PublicFunc {
         String[] arr = getUserAndPassword();
         if (arr == null) return;
         String url = "http://www.dev.labuy.cn/app.php/Auth?name=" + arr[0] + "&token=" + token;
-        LogUtils.d(TAG,url);
+        LogUtils.d(TAG, url);
         HttpUtils.get(url, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -353,7 +355,7 @@ public class PublicFunc {
         return yqList;
     }
 
-    public static void getReceiveAddressList(String url){
+    public static void getReceiveAddressList(String url) {
         HttpUtils.get(url, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -362,12 +364,14 @@ public class PublicFunc {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String resStr = response.body().string();
-               handleAddressResponse(resStr);
+                handleAddressResponse(resStr);
             }
         });
     }
+
     /**
      * 处理获取收货地址返回信息
+     *
      * @param response
      * @return
      */
@@ -386,8 +390,44 @@ public class PublicFunc {
             e.printStackTrace();
         }
     }
-//    public static ReceiveAddress getDefaultReceiveAddress(){
-//
-//    }
+
+    public static void editReceiverAddr(ReceiveAddress address) {
+        String url = " http://www.dev.labuy.cn/app.php/Address";
+        RequestBody body = new FormBody.Builder().add("id",address.addrId).add("token",MyApplication.token)
+                .add("name","").add("consignee",address.consignee).add("email",address.email)
+                .add("mobile",address.mobile).add("regional",address.regional).add("tel",address.tel)
+                .add("address",address.address).add("zip", address.zip).add("default",String.valueOf( address.defaulted))
+                .build();
+        HttpUtils.post(url, body, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String resStr = response.body().string();
+                LogUtils.d(MyApplication.TAG,"edit_address_response="+resStr);
+            }
+        });
+    }
+
+    /**
+     * 获取默认收件地址
+     * @return
+     */
+    public static ReceiveAddress getDefaultReceiveAddress() {
+        ReceiveAddress result = null;
+        List<ReceiveAddress> allAddrs = DataSupport.findAll(ReceiveAddress.class);
+        for (ReceiveAddress address : allAddrs) {
+            if (address.defaulted)
+                return address;
+        }
+        if (allAddrs.size() > 0) {
+            result = allAddrs.get(0);
+            result.setDefaulted(true);
+        }
+        return result;
+    }
 
 }
