@@ -30,8 +30,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private UserInfoFragment userInfoFragment;
     private ShoppingCartFragment shoppingCartFragment;
     private BottomNavigationView bottomView;
+    private Fragment currentFragment;
     public String name;
-    private long  firstTime=0;
+    private long firstTime = 0;
+    FragmentManager manager = getFragmentManager();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,13 +54,25 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     }
 
-
     public void setFragment(int fragmentId) {
         Fragment fragment = fragments.get(fragmentId);
         if (fragment == null) return;
-        FragmentManager manager = getFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.frame_content, fragment).commit();
+        if (currentFragment != fragment) {
+            if (fragmentId == 0) {
+                if (fragment.isAdded())
+                    transaction.remove(currentFragment).show(fragment).commit();
+                else
+                    transaction.add(R.id.frame_content, fragment).commit();
+            } else {
+                if (currentFragment == commoditiesFragment)
+                    transaction.hide(currentFragment).add(R.id.frame_content, fragment).commit();
+                else
+                    transaction.remove(currentFragment).add(R.id.frame_content, fragment).commit();
+            }
+            currentFragment = fragment;
+        }
+
     }
 
     private ArrayList<Fragment> getFragments() {
@@ -79,13 +94,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 break;
             case R.id.shopping_cart:
                 if (!isLogon)
-                    PublicFunc.toLogin(this,1);
+                    PublicFunc.toLogin(this, 1);
                 else
                     setFragment(1);
                 break;
             case R.id.mine:
                 if (!isLogon)
-                    PublicFunc.toLogin(this,2);
+                    PublicFunc.toLogin(this, 2);
                 else {
                     setFragment(2);
                 }
@@ -104,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            int index = data.getIntExtra("index",0);
+            int index = data.getIntExtra("index", 0);
             setFragment(index);
         }
     }

@@ -8,13 +8,13 @@ import org.litepal.crud.DataSupport;
 
 public class ShoppingItem extends DataSupport {
     private long id;//数据表主键
-    public String goodsId;
-    public String goodsName;
-    public String picUrl;
-    public String options;
-    public String price;
-    public int num;
-    public boolean selected;
+    private String goodsId;
+    private String goodsName;
+    private String picUrl;
+    private String options;
+    private String price;
+    private int num;
+    private boolean selected;
 
     public long getId() {
         return id;
@@ -72,7 +72,7 @@ public class ShoppingItem extends DataSupport {
         this.picUrl = picUrl;
     }
 
-    public boolean isSelected(){
+    public boolean isSelected() {
         return selected;
     }
 

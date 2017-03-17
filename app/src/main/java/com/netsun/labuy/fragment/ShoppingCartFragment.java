@@ -21,6 +21,7 @@ import com.netsun.labuy.adapter.ShoppingCartItemAdapter;
 import com.netsun.labuy.db.ShoppingItem;
 import com.netsun.labuy.utils.OnRemoveShoppingCartItemListener;
 import com.netsun.labuy.utils.OnShoppingCartItemSelectedistener;
+import com.netsun.labuy.utils.OrderInfo;
 import com.netsun.labuy.utils.SpaceItemDecoration;
 
 import org.litepal.crud.DataSupport;
@@ -39,7 +40,7 @@ public class ShoppingCartFragment extends Fragment {
     CheckBox selectAll;
     Button toBuyBtn;
 
-    private List<ShoppingItem> shoppingItems = new ArrayList<ShoppingItem>();
+    private ArrayList<ShoppingItem> shoppingItems = new ArrayList<ShoppingItem>();
     private ShoppingCartItemAdapter adapter;
     private int selectCount = 0;
 
@@ -85,7 +86,23 @@ public class ShoppingCartFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (selectCount > 0){
+                    Bundle bundle = new Bundle();
+                    ArrayList<OrderInfo> orderInfoArrayList = new ArrayList<OrderInfo>();
+                    for (ShoppingItem item:shoppingItems){
+                        if (item.isSelected()) {
+                            OrderInfo orderInfo = new OrderInfo();
+                            orderInfo.setGoodsId(item.getGoodsId());
+                            orderInfo.setGoodsAttr(item.getOptions());
+                            orderInfo.setNum(item.getNum());
+                            orderInfo.setPic(item.getPicUrl());
+                            orderInfo.setGoodsName(item.getGoodsName());
+                            orderInfo.setPrice(item.getPrice());
+                            orderInfoArrayList.add(orderInfo);
+                        }
+                    }
+                    bundle.putParcelableArrayList("order",orderInfoArrayList);
                     Intent intent = new Intent(getActivity(), ConfirmOrderActivity.class);
+                    intent.putExtras(bundle);
                     startActivity(intent);
                 }
             }

@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.netsun.labuy.R;
 import com.netsun.labuy.SearchYQByKeyActivity;
 import com.netsun.labuy.adapter.CommodityAdapter;
+import com.netsun.labuy.adapter.MenuItemAdapter;
 import com.netsun.labuy.db.First;
 import com.netsun.labuy.db.Second;
 import com.netsun.labuy.db.Third;
@@ -30,7 +31,6 @@ import com.netsun.labuy.gson.Commodity;
 import com.netsun.labuy.gson.YQList;
 import com.netsun.labuy.utils.HttpUtils;
 import com.netsun.labuy.utils.LogUtils;
-import com.netsun.labuy.adapter.MenuItemAdapter;
 import com.netsun.labuy.utils.MyApplication;
 import com.netsun.labuy.utils.PublicFunc;
 import com.netsun.labuy.utils.UpRefreshLayout;
@@ -192,6 +192,7 @@ public class CommoditiesFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         view = inflater.inflate(R.layout.layout_commodities, container, false);
         drawerLayout = (DrawerLayout) view.findViewById(R.id.drawer_layout);
         mLeftMenu = (ListView) view.findViewById(R.id.id_lv_left_menu);

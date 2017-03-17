@@ -10,6 +10,7 @@ import android.os.Parcelable;
 public class OrderInfo implements Parcelable {
     private String id;//订单编号
     private String goodsId;//商品编号
+    private String goodsName;//商品名
     private String pic;
     private int num ;//购买数量
     private String goodsAttr;//商品规格
@@ -23,6 +24,7 @@ public class OrderInfo implements Parcelable {
     protected OrderInfo(Parcel in) {
         id = in.readString();
         goodsId = in.readString();
+        goodsName = in.readString();
         pic = in.readString();
         num = in.readInt();
         goodsAttr = in.readString();
@@ -57,6 +59,14 @@ public class OrderInfo implements Parcelable {
 
     public void setGoodsId(String goodsId) {
         this.goodsId = goodsId;
+    }
+
+    public String getGoodsName() {
+        return goodsName;
+    }
+
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
     }
 
     public String getPic() {
@@ -116,6 +126,7 @@ public class OrderInfo implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(id);
         parcel.writeString(goodsId);
+        parcel.writeString(goodsName);
         parcel.writeString(pic);
         parcel.writeInt(num);
         parcel.writeString(goodsAttr);

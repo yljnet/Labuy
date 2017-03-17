@@ -382,8 +382,17 @@ public class PublicFunc {
             DataSupport.deleteAll(ReceiveAddress.class);
             JSONArray list = root.getJSONArray("data");
             for (int i = 0; i < list.length(); i++) {
-                Gson gson = new Gson();
-                ReceiveAddress address = gson.fromJson(list.getJSONObject(i).toString(), ReceiveAddress.class);
+                Gson gson = new Gson();;
+                ReceiveAddress address =gson.fromJson(list.getJSONObject(i).toString(), ReceiveAddress.class);
+//                ReceiveAddress a = gson.fromJson(list.getJSONObject(i).toString(), ReceiveAddress.class);
+//                address.setAddrId(a.getAddrId());
+//                address.setConsignee(a.getConsignee());
+//                address.setMobile(a.getMobile());
+//                address.setTel(a.getTel());
+//                address.setEmail(a.getEmail());
+//                address.setAddress(a.getAddress());
+//                address.setRegional(a.getRegional());
+//                address.setDefaulted(a.isDefaulted());
                 address.save();
             }
         } catch (JSONException e) {
@@ -393,11 +402,11 @@ public class PublicFunc {
 
     public static void editReceiverAddr(ReceiveAddress address) {
         String url = " http://www.dev.labuy.cn/app.php/Address";
-        RequestBody body = new FormBody.Builder().add("id",address.addrId).add("token",MyApplication.token)
-                .add("name","").add("consignee",address.consignee).add("email",address.email)
-                .add("mobile",address.mobile).add("regional",address.regional).add("tel",address.tel)
-                .add("address",address.address).add("zip", address.zip).add("default",String.valueOf( address.defaulted))
-                .build();
+        RequestBody body = new FormBody.Builder().add("id",address.getAddrId()).add("token",MyApplication.token)
+                .add("name","").add("consignee",address.getConsignee()).add("email",address.getEmail())
+                .add("mobile",address.getMobile()).add("regional",address.getRegional()).add("tel",address.getTel())
+                .add("address",address.getAddress()).add("zip", address.getZip())
+                .add("default",String.valueOf( address.isDefaulted())).build();
         HttpUtils.post(url, body, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -420,7 +429,7 @@ public class PublicFunc {
         ReceiveAddress result = null;
         List<ReceiveAddress> allAddrs = DataSupport.findAll(ReceiveAddress.class);
         for (ReceiveAddress address : allAddrs) {
-            if (address.defaulted)
+            if (address.isDefaulted())
                 return address;
         }
         if (allAddrs.size() > 0) {

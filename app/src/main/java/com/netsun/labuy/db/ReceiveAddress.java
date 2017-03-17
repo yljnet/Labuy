@@ -1,5 +1,8 @@
 package com.netsun.labuy.db;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import org.litepal.crud.DataSupport;
@@ -8,21 +11,65 @@ import org.litepal.crud.DataSupport;
  * Created by Administrator on 2017/3/16.
  */
 
-public class ReceiveAddress extends DataSupport {
+public class ReceiveAddress extends DataSupport implements Parcelable {
     @SerializedName("id")
-    public String addrId;//地址编号
+    private String addrId;//地址编号
     @SerializedName("name")
-    public String consignee;//收件人
-    public String mobile;//手机
-    public String tel; //固定电话
-    public String email;//邮箱地址
-    public String regional;//地区对应编码
-    public String address;
-    public String zip;//邮政编码
+    private String consignee;//收件人
+    private String mobile;//手机
+    private String tel; //固定电话
+    private String email;//邮箱地址
+    private String regional;//地区对应编码
+    private String address;
+    private String zip;//邮政编码
     @SerializedName("moren")
-    public boolean defaulted;//是否设为默认
+    private boolean defaulted;//是否设为默认
     @SerializedName("DataID")
-    private int id;//数据表主键
+    private long id;//数据表主键
+
+    public ReceiveAddress() {
+    }
+
+    protected ReceiveAddress(Parcel in) {
+        addrId = in.readString();
+        consignee = in.readString();
+        mobile = in.readString();
+        tel = in.readString();
+        email = in.readString();
+        regional = in.readString();
+        address = in.readString();
+        zip = in.readString();
+        defaulted = in.readByte() != 0;
+        id = in.readLong();
+    }
+
+    public static final Creator<ReceiveAddress> CREATOR = new Creator<ReceiveAddress>() {
+        @Override
+        public ReceiveAddress createFromParcel(Parcel in) {
+            return new ReceiveAddress(in);
+        }
+
+        @Override
+        public ReceiveAddress[] newArray(int size) {
+            return new ReceiveAddress[size];
+        }
+    };
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getAddrId() {
+        return addrId;
+    }
+
+    public void setAddrId(String addrId) {
+        this.addrId = addrId;
+    }
 
     public void setAddress(String address) {
         this.address = address;
@@ -86,5 +133,24 @@ public class ReceiveAddress extends DataSupport {
 
     public void setZip(String zip) {
         this.zip = zip;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(addrId);
+        parcel.writeString(consignee);
+        parcel.writeString(mobile);
+        parcel.writeString(tel);
+        parcel.writeString(email);
+        parcel.writeString(regional);
+        parcel.writeString(address);
+        parcel.writeString(zip);
+        parcel.writeByte((byte) (defaulted ? 1 : 0));
+        parcel.writeLong(id);
     }
 }

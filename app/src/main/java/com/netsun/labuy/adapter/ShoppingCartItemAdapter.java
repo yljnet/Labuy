@@ -22,7 +22,7 @@ import com.netsun.labuy.utils.LogUtils;
 import com.netsun.labuy.utils.OnRemoveShoppingCartItemListener;
 import com.netsun.labuy.utils.OnShoppingCartItemSelectedistener;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2017/3/13.
@@ -30,9 +30,10 @@ import java.util.List;
 
 public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartItemAdapter.ShoppingCartItemViewHolder> {
     public static final int STYLE_EDIT = 1;
+    public static final int STYLE_ORDER = 2;
     public static final int STYLE_VIEW = 3;
     Context mContext;
-    List<ShoppingItem> shoppingItems;
+    ArrayList<ShoppingItem> shoppingItems;
     OnShoppingCartItemSelectedistener onShoppingCartItemSelectedistener;
     OnRemoveShoppingCartItemListener onRemoveShoppingCartItemListener;
     private int style = STYLE_VIEW;
@@ -49,7 +50,7 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
         this.onShoppingCartItemSelectedistener = onShoppingCartItemSelectedistener;
     }
 
-    public ShoppingCartItemAdapter(List<ShoppingItem> shoppingItems) {
+    public ShoppingCartItemAdapter(ArrayList<ShoppingItem> shoppingItems) {
         this.shoppingItems = shoppingItems;
     }
 
@@ -99,18 +100,23 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
             if (LogUtils.level == LogUtils.DEBUG) {
                 picUrl = "http://www.dev.labuy.cn/Public/Uploads/565d4fed470a2.jpg";
             } else {
-                picUrl = "http://www.dev.labuy.cn/Public/Uploads/" + item.picUrl;
+                picUrl = "http://www.dev.labuy.cn/Public/Uploads/" + item.getPicUrl();
             }
             holder.checkBox.setChecked(item.isSelected());
             Glide.with(mContext).load(picUrl).into(holder.pic);
-            holder.info.setText(item.goodsName);
-            holder.price.setText("¥ " + item.price);
-            holder.num.setText("x" + String.valueOf(item.num));
+            holder.info.setText(item.getGoodsName());
+            holder.price.setText("¥ " + item.getPrice());
+            holder.num.setText("x" + String.valueOf(item.getNum()));
             if (STYLE_EDIT == style) {
                 holder.price.setVisibility(View.GONE);
                 holder.num.setVisibility(View.GONE);
                 holder.delete.setVisibility(View.VISIBLE);
-            } else {
+            } else if (STYLE_EDIT == style){
+                holder.price.setVisibility(View.VISIBLE);
+                holder.num.setVisibility(View.VISIBLE);
+                holder.delete.setVisibility(View.GONE);
+            } else if (STYLE_ORDER == style){
+                holder.checkBox.setVisibility(View.GONE);
                 holder.price.setVisibility(View.VISIBLE);
                 holder.num.setVisibility(View.VISIBLE);
                 holder.delete.setVisibility(View.GONE);
