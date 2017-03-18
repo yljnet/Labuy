@@ -21,7 +21,6 @@ import com.netsun.labuy.adapter.ShoppingCartItemAdapter;
 import com.netsun.labuy.db.ShoppingItem;
 import com.netsun.labuy.utils.OnRemoveShoppingCartItemListener;
 import com.netsun.labuy.utils.OnShoppingCartItemSelectedistener;
-import com.netsun.labuy.utils.OrderInfo;
 import com.netsun.labuy.utils.SpaceItemDecoration;
 
 import org.litepal.crud.DataSupport;
@@ -87,20 +86,13 @@ public class ShoppingCartFragment extends Fragment {
             public void onClick(View view) {
                 if (selectCount > 0){
                     Bundle bundle = new Bundle();
-                    ArrayList<OrderInfo> orderInfoArrayList = new ArrayList<OrderInfo>();
+                    ArrayList<ShoppingItem> selects = new ArrayList<ShoppingItem>();
                     for (ShoppingItem item:shoppingItems){
                         if (item.isSelected()) {
-                            OrderInfo orderInfo = new OrderInfo();
-                            orderInfo.setGoodsId(item.getGoodsId());
-                            orderInfo.setGoodsAttr(item.getOptions());
-                            orderInfo.setNum(item.getNum());
-                            orderInfo.setPic(item.getPicUrl());
-                            orderInfo.setGoodsName(item.getGoodsName());
-                            orderInfo.setPrice(item.getPrice());
-                            orderInfoArrayList.add(orderInfo);
+                            selects.add(item);
                         }
                     }
-                    bundle.putParcelableArrayList("order",orderInfoArrayList);
+                    bundle.putParcelableArrayList("shoppinglist",selects);
                     Intent intent = new Intent(getActivity(), ConfirmOrderActivity.class);
                     intent.putExtras(bundle);
                     startActivity(intent);

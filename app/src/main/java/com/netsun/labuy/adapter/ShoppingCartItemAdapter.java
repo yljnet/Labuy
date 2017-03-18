@@ -111,7 +111,7 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
                 holder.price.setVisibility(View.GONE);
                 holder.num.setVisibility(View.GONE);
                 holder.delete.setVisibility(View.VISIBLE);
-            } else if (STYLE_EDIT == style){
+            } else if (STYLE_VIEW== style){
                 holder.price.setVisibility(View.VISIBLE);
                 holder.num.setVisibility(View.VISIBLE);
                 holder.delete.setVisibility(View.GONE);

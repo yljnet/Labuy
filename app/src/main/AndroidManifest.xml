@@ -42,8 +42,16 @@
         <activity
             android:name=".ConfirmOrderActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
-        <activity android:name=".ChangeDefaultAddrActivity"></activity>
+            android:windowSoftInputMode="adjustPan|stateHidden">
+            <intent-filter>
+                <action android:name="com.netsun.intent.ACTION_CONFIRM_ORDER" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ChangeDefaultAddrActivity" />
+        <activity android:name=".ManageAddressActivity" />
+        <activity android:name=".EditAddressActivity"></activity>
     </application>
 
 </manifest>

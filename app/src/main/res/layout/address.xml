@@ -3,6 +3,7 @@
     android:id="@+id/address_ll"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#fff"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -17,25 +18,25 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/id_consignee_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:textSize="16sp"
-            android:text="收件人：虞礼江" />
+            android:text="收件人：虞礼江"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/id_mobile_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:textSize="16sp"
-            android:layout_toLeftOf="@id/id_select_addr_cb"
             android:layout_marginTop="5dp"
-            android:text="12345678998" />
+            android:layout_toLeftOf="@id/id_select_addr_cb"
+            android:text="12345678998"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/id_address_text_view"
@@ -43,8 +44,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="6dp"
-            android:padding="2dp"
             android:layout_toLeftOf="@id/id_select_addr_cb"
+            android:padding="2dp"
             android:text="收货地址：浙江省杭州市拱墅区莫干山路187号易盛大厦11楼技术部" />
 
         <View
@@ -53,4 +54,38 @@
             android:layout_alignParentBottom="true"
             android:background="@color/secondary_text_dark" />
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/id_address_manage_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/id_address_manage_default_cb"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="默认地址" />
+
+        <TextView
+            android:id="@+id/id_address_manage_edit_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:drawableLeft="@drawable/ic_edit_black_24dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="编辑" />
+
+        <TextView
+            android:id="@+id/id_address_manage_delete_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:drawableLeft="@drawable/ic_delete_black_24dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="删除" />
+    </LinearLayout>
 </LinearLayout>

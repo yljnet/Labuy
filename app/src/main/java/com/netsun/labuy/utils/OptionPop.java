@@ -2,7 +2,9 @@ package com.netsun.labuy.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -179,7 +181,7 @@ public class OptionPop extends PopupWindow implements View.OnClickListener {
                 if (info.options != null && !unSelect.isEmpty()) {
                     Toast.makeText(mContext, "请选择 " + unSelect, Toast.LENGTH_SHORT).show();
                 } else {
-
+                    ConfirmOrder();
                 }
                 break;
             case R.id.id_ok:
@@ -189,12 +191,33 @@ public class OptionPop extends PopupWindow implements View.OnClickListener {
                     if (STYLE_KEEP == style) {
                         addProductToShoppingCart();
                     } else if (STYLE_BUY == style) {
-
+                        ConfirmOrder();
                     }
                 }
                 break;
             default:
                 break;
+        }
+    }
+
+    private void ConfirmOrder() {
+        if (!MyApplication.isLogon) {
+            PublicFunc.toLogin((Activity) mContext, 3);
+        } else {
+            ShoppingItem item = new ShoppingItem();
+            item.setGoodsId(info.id);
+            item.setOptions(optionSelected);
+            item.setNum(num);
+            item.setPicUrl(info.pic);
+            item.setGoodsName(info.name);
+            item.setPrice(info.price);
+            ArrayList<ShoppingItem> list = new ArrayList<ShoppingItem>();
+            list.add(item);
+            Intent intent = new Intent("com.netsun.intent.ACTION_CONFIRM_ORDER");
+            Bundle bundle= new Bundle();
+            bundle.putParcelableArrayList("shoppinglist",list);
+            intent.putExtras(bundle);
+            mContext.startActivity(intent);
         }
     }
 

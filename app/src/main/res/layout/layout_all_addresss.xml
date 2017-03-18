@@ -1,39 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/id_manage_button"
-        android:layout_width="wrap_content"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentRight="true"
-        android:gravity="center"
-        android:background="#fff"
-        android:text="管理" />
-
-    <Button
-        android:id="@+id/id_add_address_button"
+    <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@android:color/holo_red_light"
-        android:text="新增收件地址"
-        android:textColor="#fff" />
+        android:layout_height="?attr/actionBarSize">
+
+        <TextView
+            android:id="@+id/tool_bar_title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#000" />
+
+        <Button
+            android:id="@+id/id_manage_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@android:color/transparent"
+            android:text="管理" />
+    </android.support.v7.widget.Toolbar>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cardview_dark_background"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/id_address_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/id_add_address_button"
-        android:layout_marginTop="?attr/actionBarSize" />
-
-    <include layout="@layout/layout_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_weight="1"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"/>
 
-</RelativeLayout>
+    <Button
+    android:id="@+id/id_add_address_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="@android:color/holo_red_light"
+    android:text="新增收件地址"
+    android:textColor="#fff" />
+</LinearLayout>

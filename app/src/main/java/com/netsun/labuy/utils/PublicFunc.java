@@ -14,6 +14,7 @@ import com.netsun.labuy.LoginActivity;
 import com.netsun.labuy.db.First;
 import com.netsun.labuy.db.ReceiveAddress;
 import com.netsun.labuy.db.Second;
+import com.netsun.labuy.db.ShoppingItem;
 import com.netsun.labuy.db.Third;
 import com.netsun.labuy.gson.Commodity;
 import com.netsun.labuy.gson.ProductInfo;
@@ -114,11 +115,26 @@ public class PublicFunc {
      * @param callback
      */
     public static void submitOrder(String token, OrderInfo orderInfo, Callback callback) {
+        JSONObject root = new JSONObject();
+        try {
+            JSONArray list = new JSONArray();
+            for (ShoppingItem item : orderInfo.getShoppingItems()) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("goodsId", item.getGoodsId())
+                        .put("goodsNum", item.getNum())
+                        .put("goodsAttr", item.getOptions());
+                list.put(jsonObject);
+            }
+            root.put("addrId", orderInfo.getAddressId())
+                    .put("token", MyApplication.token)
+                    .put("list", list);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        LogUtils.d(MyApplication.TAG, root.toString());
         String url = "http://www.dev.labuy.cn/app.php/Order";
-        RequestBody requestBody = new FormBody.Builder().add("token", token).add("$goodsId", orderInfo.getGoodsId()).
-                add("goodsNumber", String.valueOf(orderInfo.getNum())).add("goodsAttr", orderInfo.getGoodsAttr()).
-                add("remark", orderInfo.getRemark()).add("$addressId", String.valueOf(orderInfo.getAddressId())).build();
-        HttpUtils.post(url, requestBody, callback);
+        RequestBody body = new FormBody.Builder().add("data", root.toString()).build();
+        HttpUtils.post(url, body, callback);
     }
 
     /**
@@ -384,15 +400,6 @@ public class PublicFunc {
             for (int i = 0; i < list.length(); i++) {
                 Gson gson = new Gson();;
                 ReceiveAddress address =gson.fromJson(list.getJSONObject(i).toString(), ReceiveAddress.class);
-//                ReceiveAddress a = gson.fromJson(list.getJSONObject(i).toString(), ReceiveAddress.class);
-//                address.setAddrId(a.getAddrId());
-//                address.setConsignee(a.getConsignee());
-//                address.setMobile(a.getMobile());
-//                address.setTel(a.getTel());
-//                address.setEmail(a.getEmail());
-//                address.setAddress(a.getAddress());
-//                address.setRegional(a.getRegional());
-//                address.setDefaulted(a.isDefaulted());
                 address.save();
             }
         } catch (JSONException e) {

@@ -3,18 +3,17 @@ package com.netsun.labuy.utils;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.netsun.labuy.db.ShoppingItem;
+
+import java.util.List;
+
 /**
  * Created by Administrator on 2017/3/10.
  */
 
 public class OrderInfo implements Parcelable {
     private String id;//订单编号
-    private String goodsId;//商品编号
-    private String goodsName;//商品名
-    private String pic;
-    private int num ;//购买数量
-    private String goodsAttr;//商品规格
-    private String price;//价格
+    private List<ShoppingItem> shoppingItems;
     private int addressId;//收货地址编号
     private String remark;//备注
     public OrderInfo() {
@@ -23,12 +22,6 @@ public class OrderInfo implements Parcelable {
 
     protected OrderInfo(Parcel in) {
         id = in.readString();
-        goodsId = in.readString();
-        goodsName = in.readString();
-        pic = in.readString();
-        num = in.readInt();
-        goodsAttr = in.readString();
-        price = in.readString();
         addressId = in.readInt();
         remark = in.readString();
     }
@@ -53,44 +46,12 @@ public class OrderInfo implements Parcelable {
         this.id = id;
     }
 
-    public String getGoodsId() {
-        return goodsId;
+    public List<ShoppingItem> getShoppingItems() {
+        return shoppingItems;
     }
 
-    public void setGoodsId(String goodsId) {
-        this.goodsId = goodsId;
-    }
-
-    public String getGoodsName() {
-        return goodsName;
-    }
-
-    public void setGoodsName(String goodsName) {
-        this.goodsName = goodsName;
-    }
-
-    public String getPic() {
-        return pic;
-    }
-
-    public void setPic(String pic) {
-        this.pic = pic;
-    }
-
-    public int getNum() {
-        return num;
-    }
-
-    public void setNum(int num) {
-        this.num = num;
-    }
-
-    public String getGoodsAttr() {
-        return goodsAttr;
-    }
-
-    public void setGoodsAttr(String goodsAttr) {
-        this.goodsAttr = goodsAttr;
+    public void setShoppingItems(List<ShoppingItem> shoppingItems) {
+        this.shoppingItems = shoppingItems;
     }
 
     public int getAddressId() {
@@ -101,14 +62,6 @@ public class OrderInfo implements Parcelable {
         this.addressId = addressId;
     }
 
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
     public String getRemark() {
         return remark;
     }
@@ -116,6 +69,7 @@ public class OrderInfo implements Parcelable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
 
     @Override
     public int describeContents() {
@@ -125,12 +79,6 @@ public class OrderInfo implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(id);
-        parcel.writeString(goodsId);
-        parcel.writeString(goodsName);
-        parcel.writeString(pic);
-        parcel.writeInt(num);
-        parcel.writeString(goodsAttr);
-        parcel.writeString(price);
         parcel.writeInt(addressId);
         parcel.writeString(remark);
     }
