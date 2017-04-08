@@ -1,81 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/shopping_item_rl"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:background="#fff"
     android:orientation="horizontal">
 
     <CheckBox
-        android:id="@+id/id_select_cb"
+        android:id="@+id/id_goods_cb"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:layout_centerVertical="true" />
-
-    <TextView
-        android:id="@+id/id_product_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:text="¥31.9"
-        android:textColor="@android:color/holo_red_light" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_toRightOf="@id/id_select_cb"
-        android:background="@color/secondary_text_dark" />
-
-    <LinearLayout
-        android:id="@+id/ll_right"
-        android:layout_width="60dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/id_delete_item"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/holo_red_light"
-            android:text="删\n除"
-            android:textColor="#fff"
-            android:textSize="16sp"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/id_num_text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="x10"
-            android:textColor="#000"
-            android:textSize="14sp" />
-    </LinearLayout>
+        android:gravity="center" />
 
     <ImageView
         android:id="@+id/id_product_pic"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_below="@+id/ll_head"
-        android:layout_toEndOf="@+id/id_select_cb"
-        android:layout_toRightOf="@+id/id_select_cb"
-        android:scaleType="centerInside" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp"
+        android:scaleType="fitXY" />
 
-    <TextView
-        android:id="@+id/id_product_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginTop="10dp"
-        android:layout_toLeftOf="@id/ll_right"
-        android:layout_toRightOf="@id/id_product_pic"
-        android:padding="5dp"
-        android:text="岛津 岛津紫外分光光度计SolidSpec-3700/3700DUV	( )" />
+    <RelativeLayout
+        android:id="@+id/id_goods_show_rl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/id_show_num_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:padding="20dp"
+            android:text="x1"
+            android:textColor="#000"
+            android:textSize="14sp" />
 
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/id_show_name_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:ellipsize="end"
+            android:lines="2"
+            android:text="岛津岛津紫外分光光度计SolidSpec-3700/3700DUV	( )"
+            android:textColor="#000"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/id_show_price_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="5dp"
+            android:text="¥31.9"
+            android:textColor="@android:color/holo_red_light" />
+
+        <TextView
+            android:id="@+id/id_show_option_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/id_show_price_text_view"
+            android:layout_below="@id/id_show_name_text_view"
+            android:layout_margin="5dp"
+            android:layout_toLeftOf="@id/id_show_num_text_view"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="岛津 岛津紫外分光光度计SolidSpec-3700/3700DUV	( )"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/id_goods_edit_rl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/id_delete_item"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@color/colorPrimary"
+            android:text="删除"
+            android:textColor="#fff"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/id_edit_option_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/id_delete_item"
+            android:layout_toStartOf="@id/id_delete_item"
+            android:background="@drawable/shape_bg"
+            android:drawableLeft="@drawable/ic_edit_black_24dp"
+            android:ellipsize="middle"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:text="岛津 岛津紫外分光光度计SolidSpec-3700/3700DUV	( )" />
+
+        <LinearLayout
+            android:id="@+id/ll_num_edit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/id_edit_option_text_view"
+            android:layout_toLeftOf="@id/id_delete_item"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/id_minus_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="5dp"
+                android:background="#fff"
+                android:src="@drawable/ic_remove_black_24dp" />
+
+            <TextView
+                android:id="@+id/id_edit_num_text_view"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="#000" />
+
+            <ImageButton
+                android:id="@+id/id_add_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="5dp"
+                android:background="#fff"
+                android:src="@drawable/ic_add_black_24dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

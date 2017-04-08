@@ -1,23 +1,30 @@
 package com.netsun.labuy.adapter;
 
-import android.content.ContentValues;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.netsun.labuy.R;
 import com.netsun.labuy.db.ReceiveAddress;
+import com.netsun.labuy.utils.HandleDataBase;
+import com.netsun.labuy.utils.OnAddressRemove;
 import com.netsun.labuy.utils.OnAddressSelectLinstener;
-
-import org.litepal.crud.DataSupport;
+import com.netsun.labuy.utils.PublicFunc;
 
 import java.util.List;
+
+import static com.netsun.labuy.R.layout.address;
 
 /**
  * Created by Administrator on 2017/3/17.
@@ -26,9 +33,13 @@ import java.util.List;
 public class ReceiveAddressAdapter extends RecyclerView.Adapter<ReceiveAddressAdapter.AddrViewHolder> {
     public static final int VIEW_MODE = 1;
     public static final int EDIT_MODE = 2;
+    public static final int SELECT_MODE = 3;
     private int mode = VIEW_MODE;
+    Context mContext;
     private List<ReceiveAddress> addressList;
     private OnAddressSelectLinstener onAddressSelectLinstener;
+    private OnAddressRemove onAddressRemove;
+    private Handler handler;
 
     public ReceiveAddressAdapter(List<ReceiveAddress> addresses) {
         this.addressList = addresses;
@@ -38,43 +49,72 @@ public class ReceiveAddressAdapter extends RecyclerView.Adapter<ReceiveAddressAd
         this.onAddressSelectLinstener = linstener;
     }
 
+    public void setOnAddressRemove(OnAddressRemove onAddressRemove) {
+        this.onAddressRemove = onAddressRemove;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+
     public void setMode(int mode) {
         this.mode = mode;
     }
 
     @Override
     public AddrViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.address, parent, false);
+        mContext = parent.getContext();
+        View view = LayoutInflater.from(mContext).inflate(address, parent, false);
         final AddrViewHolder holder = new AddrViewHolder(view);
-        holder.addrLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (onAddressSelectLinstener != null)
-                    onAddressSelectLinstener.SelectAddr(addressList.get(holder.getAdapterPosition()));
-            }
-        });
-        if (mode == EDIT_MODE) {
-            holder.defaultCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        if (SELECT_MODE == mode) {
+            holder.addrLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                public void onClick(View view) {
+                    if (onAddressSelectLinstener != null)
+                        onAddressSelectLinstener.SelectAddr(addressList.get(holder.getAdapterPosition()));
+                }
+            });
+        }
+        if (mode == EDIT_MODE) {
+            holder.defaultCB.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                     ReceiveAddress address = addressList.get(holder.getAdapterPosition());
-                    if (address != null){
-                        ContentValues values = new ContentValues();
-                        values.put("defaulted",false);
-                        DataSupport.updateAll(ReceiveAddress.class,values,"");
-                        address.setDefaulted(true);
+                    if (address.getDefaulted() == 0) {
+                        if (address != null) {
+                            Message msg = new Message();
+                            msg.what = 1;
+                            msg.obj = address;
+                            if (handler != null)
+                                handler.sendMessage(msg);
+                        }
                     }
                 }
             });
+
             holder.editTV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Intent intent = new Intent("com.netsun.intent.ACTION_EDIT_ADDRESS");
+                    ReceiveAddress address = addressList.get(holder.getAdapterPosition());
+                    intent.putExtra("address", address);
+                    ((Activity) mContext).startActivityForResult(intent, 1);
                 }
             });
+
             holder.deleteTV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    Snackbar.make(holder.addrLayout, "确定要删除这个地址吗？", Snackbar.LENGTH_LONG)
+                            .setAction("确定", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    ReceiveAddress address = addressList.get(holder.getAdapterPosition());
+                                    if (onAddressRemove != null) {
+                                        onAddressRemove.onRemove(address);
+                                    }
+                                }
+                            }).show();
                 }
             });
         }
@@ -82,19 +122,31 @@ public class ReceiveAddressAdapter extends RecyclerView.Adapter<ReceiveAddressAd
     }
 
     @Override
-    public void onBindViewHolder(AddrViewHolder holder, int position) {
+    public void onBindViewHolder(final AddrViewHolder holder, int position) {
         if (holder == null) return;
-        ReceiveAddress addr = addressList.get(position);
+        final ReceiveAddress addr = addressList.get(position);
         if (addr == null) return;
-        holder.nameTV.setText(addr.getConsignee());
+        holder.nameTV.setText("收件人：" + addr.getConsignee());
         if (addr.getMobile() != null && !addr.getMobile().isEmpty())
             holder.phoneTV.setText(addr.getMobile());
         else holder.phoneTV.setText(addr.getTel());
-        holder.addrTV.setText(addr.getAddress());
-        if (mode == VIEW_MODE)
+        String scount = null;
+        while ((scount = HandleDataBase.getAreaById(addr.getRegional())) == null) {
+            PublicFunc.getAreaInfoFromServer(addr.getRegional());
+        }
+        holder.addrTV.setText(scount + addr.getAddress());
+        if (mode == VIEW_MODE || mode == SELECT_MODE) {
             holder.manageLayout.setVisibility(View.GONE);
-        else
+        } else {
             holder.itemView.setVisibility(View.VISIBLE);
+            if (addr.getDefaulted() == 1) {
+                holder.defaultCB.setChecked(true);
+                holder.defaultCB.setClickable(false);
+            } else {
+                holder.defaultCB.setChecked(false);
+                holder.defaultCB.setClickable(true);
+            }
+        }
     }
 
     @Override

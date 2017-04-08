@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private CommoditiesFragment commoditiesFragment;
     private UserInfoFragment userInfoFragment;
     private ShoppingCartFragment shoppingCartFragment;
-    private BottomNavigationView bottomView;
+    public BottomNavigationView bottomView;
     private Fragment currentFragment;
     public String name;
     private long firstTime = 0;
@@ -58,21 +58,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         Fragment fragment = fragments.get(fragmentId);
         if (fragment == null) return;
         FragmentTransaction transaction = manager.beginTransaction();
-        if (currentFragment != fragment) {
-            if (fragmentId == 0) {
-                if (fragment.isAdded())
-                    transaction.remove(currentFragment).show(fragment).commit();
-                else
-                    transaction.add(R.id.frame_content, fragment).commit();
-            } else {
-                if (currentFragment == commoditiesFragment)
-                    transaction.hide(currentFragment).add(R.id.frame_content, fragment).commit();
-                else
-                    transaction.remove(currentFragment).add(R.id.frame_content, fragment).commit();
-            }
-            currentFragment = fragment;
+        if (currentFragment != null) {
+            if (fragment.isAdded()) {
+                transaction.hide(currentFragment).show(fragment).commit();
+            } else
+                transaction.hide(currentFragment).add(R.id.frame_content, fragment).commit();
+        } else {
+            if (fragment.isAdded()) {
+                transaction.show(fragment).commit();
+            } else
+                transaction.add(R.id.frame_content, fragment).commit();
         }
-
+        currentFragment = fragment;
     }
 
     private ArrayList<Fragment> getFragments() {
@@ -86,22 +83,33 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         return fragmentArrayList;
     }
 
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.home:
+                bottomView.getMenu().getItem(0).setChecked(true);
+                bottomView.getMenu().getItem(1).setChecked(false);
+                bottomView.getMenu().getItem(2).setChecked(false);
                 setFragment(0);
                 break;
             case R.id.shopping_cart:
                 if (!isLogon)
                     PublicFunc.toLogin(this, 1);
-                else
+                else {
+                    bottomView.getMenu().getItem(0).setChecked(false);
+                    bottomView.getMenu().getItem(1).setChecked(true);
+                    bottomView.getMenu().getItem(2).setChecked(false);
                     setFragment(1);
+                }
                 break;
             case R.id.mine:
                 if (!isLogon)
                     PublicFunc.toLogin(this, 2);
                 else {
+                    bottomView.getMenu().getItem(0).setChecked(false);
+                    bottomView.getMenu().getItem(1).setChecked(false);
+                    bottomView.getMenu().getItem(2).setChecked(true);
                     setFragment(2);
                 }
                 break;
@@ -127,16 +135,23 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            long secondTime = System.currentTimeMillis();
-            if (secondTime - firstTime > 800) {//如果两次按键时间间隔大于800毫秒，则不退出
-                Toast.makeText(MainActivity.this, "再按一次退出程序",
-                        Toast.LENGTH_SHORT).show();
-                firstTime = secondTime;//更新firstTime
+            if (!currentFragment.equals(fragments.get(0))) {
+                bottomView.getMenu().getItem(0).setChecked(true);
+                onNavigationItemSelected(bottomView.getMenu().getItem(0));
                 return true;
             } else {
-                System.exit(0);//否则退出程序
+                long secondTime = System.currentTimeMillis();
+                if (secondTime - firstTime > 800) {//如果两次按键时间间隔大于800毫秒，则不退出
+                    Toast.makeText(MainActivity.this, "再按一次退出程序",
+                            Toast.LENGTH_SHORT).show();
+                    firstTime = secondTime;//更新firstTime
+                    return true;
+                } else {
+                    System.exit(0);//否则退出程序
+                }
             }
         }
         return super.onKeyUp(keyCode, event);
     }
+
 }

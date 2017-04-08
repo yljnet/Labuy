@@ -23,7 +23,7 @@ public class ReceiveAddress extends DataSupport implements Parcelable {
     private String address;
     private String zip;//邮政编码
     @SerializedName("moren")
-    private boolean defaulted;//是否设为默认
+    private int defaulted;//是否设为默认
     @SerializedName("DataID")
     private long id;//数据表主键
 
@@ -39,7 +39,7 @@ public class ReceiveAddress extends DataSupport implements Parcelable {
         regional = in.readString();
         address = in.readString();
         zip = in.readString();
-        defaulted = in.readByte() != 0;
+        defaulted = in.readInt();
         id = in.readLong();
     }
 
@@ -95,11 +95,11 @@ public class ReceiveAddress extends DataSupport implements Parcelable {
         this.email = email;
     }
 
-    public boolean isDefaulted() {
+    public int getDefaulted() {
         return defaulted;
     }
 
-    public void setDefaulted(boolean defaulted) {
+    public void setDefaulted(int defaulted) {
         this.defaulted = defaulted;
     }
 
@@ -150,7 +150,7 @@ public class ReceiveAddress extends DataSupport implements Parcelable {
         parcel.writeString(regional);
         parcel.writeString(address);
         parcel.writeString(zip);
-        parcel.writeByte((byte) (defaulted ? 1 : 0));
+        parcel.writeInt(defaulted);
         parcel.writeLong(id);
     }
 }

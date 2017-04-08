@@ -1,7 +1,6 @@
 package com.netsun.labuy.fragment;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,11 +11,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.netsun.labuy.CommodityInfoActivity;
 import com.netsun.labuy.R;
 import com.netsun.labuy.gson.ProductInfo;
-import com.netsun.labuy.utils.LogUtils;
+import com.netsun.labuy.gson.ProductOption;
 import com.netsun.labuy.utils.OptionPop;
+import com.netsun.labuy.utils.PublicFunc;
+
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/3/8.
@@ -29,12 +34,13 @@ public class ChooseOptionFragment extends Fragment {
     private TextView name;
     private TextView price;
     private TextView options;
+    private TextView posterTV;
     private TextView countryText;
     private TextView cateTextView;
     private ProductInfo info;
     private String unSelect;
 
-    public ChooseOptionFragment(ProductInfo info, Handler handler) {
+    public ChooseOptionFragment(ProductInfo info) {
         this.info = info;
     }
 
@@ -43,25 +49,24 @@ public class ChooseOptionFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         String picUrl;
         if (info != null) {
-            if (LogUtils.level == LogUtils.DEBUG) {
-                picUrl = "http://www.dev.labuy.cn/Public/Uploads/565d4fed470a2.jpg";
-            } else {
-                picUrl = "http://www.dev.labuy.cn/Public/Uploads/" + info.pic;
-            }
-            Glide.with(getActivity()).load(picUrl).into(pic);
+            picUrl = PublicFunc.host + "Public/Uploads/device/" + info.pic;
+            pic.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            Glide.with(getActivity()).load(R.drawable.loading).asGif().into(pic);
+            pic.setScaleType(ImageView.ScaleType.FIT_XY);
+            Glide
+                    .with(getActivity())
+                    .load(picUrl)
+                    .into(new SimpleTarget<GlideDrawable>() {
+                        @Override
+                        public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                            pic.setImageDrawable(resource);
+                        }
+                    });
             name.setText(info.name);
+            posterTV.setText(info.poster);
             countryText.setText(info.country);
             cateTextView.setText(info.category);
             price.setText("¥ " + info.price);
-            if (info.options != null) {
-                unSelect = ((CommodityInfoActivity) getContext()).getUnSelect();
-                if (unSelect.isEmpty())
-                    setOptions("请选择 " + unSelect);
-                else
-                    setOptions("已选 " + unSelect);
-            } else {
-                setOptions("已选 数量: 1 件");
-            }
             options.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -80,8 +85,9 @@ public class ChooseOptionFragment extends Fragment {
         name = (TextView) view.findViewById(R.id.id_yq_name);
         price = (TextView) view.findViewById(R.id.id_yq_price);
         options = (TextView) view.findViewById(R.id.id_yq_options);
+        posterTV = (TextView)view.findViewById(R.id.id_poster_tv);
         countryText = (TextView) view.findViewById(R.id.id_country_text);
-        cateTextView = (TextView)view.findViewById(R.id.id_cate_text);
+        cateTextView = (TextView) view.findViewById(R.id.id_cate_text);
         return view;
     }
 

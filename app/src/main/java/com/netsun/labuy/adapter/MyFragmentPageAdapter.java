@@ -12,10 +12,11 @@ import java.util.ArrayList;
 
 public class MyFragmentPageAdapter extends FragmentPagerAdapter {
     ArrayList<Fragment> fragments;
-    private String[] titles = {"商品", "详情"};
-    public MyFragmentPageAdapter(FragmentManager manager, ArrayList<Fragment> list) {
+    ArrayList<String> titles;
+    public MyFragmentPageAdapter(FragmentManager manager, ArrayList<Fragment> list, ArrayList<String> titles) {
         super(manager);
         fragments = list;
+        this.titles = titles;
     }
 
     @Override
@@ -30,6 +31,6 @@ public class MyFragmentPageAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return titles[position];
+        return titles.get(position);
     }
 }

@@ -2,38 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorWhiteSmoke"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <include
         android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="购物车"
-            android:textColor="#000" />
-
-        <TextView
-            android:id="@+id/id_edit_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="编辑"
-            android:textSize="16sp"
-            android:layout_marginRight="10dp"
-            android:padding="10dp"/>
-    </android.support.v7.widget.Toolbar>
+        layout="@layout/layout_toolbar" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/toolbar"
         android:background="@color/secondary_text_dark" />
 
     <android.support.v7.widget.RecyclerView
@@ -41,39 +19,48 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_below="@+id/view"
-        android:background="#F0F0F0"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        android:background="#fff"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/id_empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="购物车里什么也没有"
+            android:textColor="#000" />
+    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/toolbar"
         android:background="@color/secondary_text_dark" />
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_height="?attr/actionBarSize">
 
         <CheckBox
             android:id="@+id/id_select_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
             android:layout_centerVertical="true"
-            android:text="全选"/>
+            android:layout_marginRight="10dp"
+            android:text="全选" />
 
         <Button
             android:id="@+id/id_to_buy"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="#fff"
             android:layout_alignParentRight="true"
             android:background="@color/secondary_text_dark"
-            android:text="结算(0)" />
+            android:text="结算(0)"
+            android:textColor="#fff" />
     </RelativeLayout>
 
 </LinearLayout>

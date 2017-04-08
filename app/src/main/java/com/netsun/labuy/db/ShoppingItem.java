@@ -3,6 +3,8 @@ package com.netsun.labuy.db;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.litepal.crud.DataSupport;
 
 /**
@@ -11,11 +13,17 @@ import org.litepal.crud.DataSupport;
 
 public class ShoppingItem extends DataSupport implements Parcelable{
     private long id;//数据表主键
+    @SerializedName("goods_id")
     private String goodsId;
+    @SerializedName("goods_name")
     private String goodsName;
+    @SerializedName("goods_pic")
     private String picUrl;
+    @SerializedName("goods_attr")
     private String options;
+    @SerializedName("goods_price")
     private String price;
+    @SerializedName("goods_number")
     private int num;
     private boolean selected;
 

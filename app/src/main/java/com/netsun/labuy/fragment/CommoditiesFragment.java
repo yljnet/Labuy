@@ -11,6 +11,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.netsun.labuy.R;
 import com.netsun.labuy.SearchYQByKeyActivity;
 import com.netsun.labuy.adapter.CommodityAdapter;
@@ -33,7 +35,9 @@ import com.netsun.labuy.utils.HttpUtils;
 import com.netsun.labuy.utils.LogUtils;
 import com.netsun.labuy.utils.MyApplication;
 import com.netsun.labuy.utils.PublicFunc;
+import com.netsun.labuy.utils.SpaceItemDecoration;
 import com.netsun.labuy.utils.UpRefreshLayout;
+import com.netsun.labuy.utils.Utility;
 
 import org.litepal.crud.DataSupport;
 
@@ -51,7 +55,7 @@ import static com.netsun.labuy.utils.PublicFunc.closeProgress;
  * Created by Administrator on 2017/2/27.
  */
 
-public class CommoditiesFragment extends Fragment {
+public class CommoditiesFragment extends Fragment implements View.OnTouchListener{
     public static final int LEVEL_FIRST = 0;
     public static final int LEVEL_SECOND = 1;
     public static final int LEVEL_THIRD = 2;
@@ -110,6 +114,7 @@ public class CommoditiesFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        commoditiesView.setOnTouchListener(this);
         checkImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,7 +133,6 @@ public class CommoditiesFragment extends Fragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                LogUtils.d(MyApplication.TAG, PublicFunc.work);
                 currentPage++;
                 if (TextUtils.equals(PublicFunc.work, "search_yq_by_cate_id")) {
                     searchYQByCateId(currentPage, cate_id);
@@ -187,6 +191,24 @@ public class CommoditiesFragment extends Fragment {
                 commoditiesView.getLayoutManager().smoothScrollToPosition(commoditiesView, null, 0);
             }
         });
+        commoditiesView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                switch (newState) {
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        Glide.with(getActivity()).resumeRequests();
+                        break;
+                    case RecyclerView.SCROLL_STATE_DRAGGING:
+                        Glide.with(getActivity()).pauseRequests();
+                        break;
+                    case RecyclerView.SCROLL_STATE_SETTLING:
+                        Glide.with(getActivity()).pauseRequests();
+                }
+            }
+        });
+        queryFirst();
+
+
     }
 
     @Nullable
@@ -209,6 +231,7 @@ public class CommoditiesFragment extends Fragment {
         commoditiesView.setLayoutManager(gridLayoutManager);
         adapter = new CommodityAdapter(commodityList);
         commoditiesView.setAdapter(adapter);
+        commoditiesView.addItemDecoration(new SpaceItemDecoration(getResources().getDimensionPixelSize(R.dimen.grid_space)));
         toTopButton = (TextView) view.findViewById(R.id.id_button_to_top);
         failLayout = (RelativeLayout) view.findViewById(R.id.id_search_fail_layout);
         if (TextUtils.equals(PublicFunc.work, "search_yq_by_cate_id")) {
@@ -253,7 +276,7 @@ public class CommoditiesFragment extends Fragment {
                 PublicFunc.closeProgress();
                 String restext = response.body().string();
                 LogUtils.d(MyApplication.TAG, restext);
-                final YQList yqList = PublicFunc.handleYQListResponse(restext);
+                final YQList yqList = Utility.handleYQListResponse(restext);
                 if (200 == yqList.code && yqList.commodities != null) {
                     LogUtils.d(MyApplication.TAG, "" + yqList.commodities.size());
                     final int index = commodityList.size();
@@ -314,7 +337,7 @@ public class CommoditiesFragment extends Fragment {
                 PublicFunc.closeProgress();
                 String restext = response.body().string();
                 LogUtils.d(MyApplication.TAG, restext);
-                final YQList yqList = PublicFunc.handleYQListResponse(restext);
+                final YQList yqList = Utility.handleYQListResponse(restext);
                 if (200 == yqList.code && yqList.commodities != null) {
                     LogUtils.d(MyApplication.TAG, "" + yqList.commodities.size());
                     final int index = commodityList.size();
@@ -437,11 +460,11 @@ public class CommoditiesFragment extends Fragment {
                 LogUtils.d(MyApplication.TAG, resText);
                 boolean handleResult = false;
                 if (LEVEL_FIRST == type) {
-                    handleResult = PublicFunc.handleFirstResponse(resText);
+                    handleResult = Utility.handleFirstResponse(resText);
                 } else if (LEVEL_SECOND == type) {
-                    handleResult = PublicFunc.handleSecondResponse(resText, selectedFirst.getId());
+                    handleResult = Utility.handleSecondResponse(resText, selectedFirst.getId());
                 } else if (LEVEL_THIRD == type) {
-                    handleResult = PublicFunc.handleThirdResponse(resText, selectedSecond.getId());
+                    handleResult = Utility.handleThirdResponse(resText, selectedSecond.getId());
                 }
                 if (handleResult) {
                     getActivity().runOnUiThread(new Runnable() {
@@ -462,4 +485,13 @@ public class CommoditiesFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        return true;
+    }
 }

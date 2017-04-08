@@ -25,9 +25,6 @@ import java.util.List;
 
 public class ProductInfoDetailsFragment extends Fragment {
     View view;
-//    ListView paramListview;
-//    ListView methodListView;
-//    TextView introTextView;
     ListView detialView;
 
     ProductInfo info;
@@ -43,25 +40,28 @@ public class ProductInfoDetailsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         List<DetialItem> detials = new ArrayList<DetialItem>();
         if (info != null) {
-            detials.add(new DetialItem(DetialItem.TYPE_TITLE, "产品主要参数"));
             if (info.params != null) {
+                detials.add(new DetialItem(DetialItem.TYPE_TITLE, "产品主要参数"));
                 for (ProductParam param : info.params) {
                     String s = param.name + ":" + param.value;
                     detials.add(new DetialItem(DetialItem.TYPE_TEXT, s));
                     paramlist.add(s);
                 }
             }
-            detials.add(new DetialItem(DetialItem.TYPE_TITLE, "产品介绍"));
-            detials.add(new DetialItem(DetialItem.TYPE_HTML, info.intro));
-            detials.add(new DetialItem(DetialItem.TYPE_TITLE, "应用方法"));
-            ProductMethod head = new ProductMethod();
-            head.name = "名称";
-            head.cate_hy = "适用行业领域";
-            head.sample = "检测样品";
-            head.target = "目标检测物";
-            head.standard = "参考标准名称";
-            detials.add(new DetialItem(head));
+            if (info.intro != null) {
+                detials.add(new DetialItem(DetialItem.TYPE_TITLE, "产品介绍"));
+                detials.add(new DetialItem(DetialItem.TYPE_HTML, info.intro));
+            }
+
             if(info.appMethods != null) {
+                detials.add(new DetialItem(DetialItem.TYPE_TITLE, "应用方法"));
+                ProductMethod head = new ProductMethod();
+                head.name = "名称";
+                head.cate_hy = "适用行业领域";
+                head.sample = "检测样品";
+                head.target = "目标检测物";
+                head.standard = "参考标准名称";
+                detials.add(new DetialItem(head));
                 for (ProductMethod method : info.appMethods) {
                     detials.add(new DetialItem(method));
                 }
@@ -98,9 +98,6 @@ public class ProductInfoDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.layout_product_info_details, container, false);
         detialView = (ListView)view.findViewById(R.id.list_detial);
-//        paramListview = (ListView) view.findViewById(R.id.id_param_list_view);
-//        introTextView = (TextView) view.findViewById(R.id.id_intro_text);
-//        methodListView = (ListView) view.findViewById(R.id.id_method_list_view);
         return view;
     }
 }

@@ -41,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:drawableLeft="@drawable/search"
-                android:hint="输入您想要查找的仪器"
+                android:hint="请输入搜索关键字"
                 android:imeActionLabel="搜索"
                 android:inputType="text"
                 android:lines="1" />

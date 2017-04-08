@@ -62,7 +62,7 @@ public class SearchYQByKeyActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 toSearch();
-                return false;
+                return true;
             }
         });
         historyList = getHistoryList();

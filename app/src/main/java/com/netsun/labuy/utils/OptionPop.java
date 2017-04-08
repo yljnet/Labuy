@@ -12,12 +12,17 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netsun.labuy.CommodityInfoActivity;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.netsun.labuy.R;
 import com.netsun.labuy.adapter.OptionItemAdapter;
 import com.netsun.labuy.db.ShoppingItem;
@@ -37,15 +42,18 @@ public class OptionPop extends PopupWindow implements View.OnClickListener {
     public static final int STYLE_KEEP = 1;
     public static final int STYLE_BUY = 2;
     public static final int STYLE_SELECT = 3;
+    View view;
     Context mContext;
+    Button closeButton;
+    ImageView littlePicImageView;
     TextView headTextView;
     RecyclerView optionsView;
     ImageButton addButton, minusButton;
     TextView numTextView;
     TextView addShoppingCartBtn, buyBtn, okBtn;
     ProductInfo info;
-    private List<Option> selectOption = new ArrayList<Option>();
-    private String unSelect, optionSelected = "";
+    private List<ProductOption> validOptions;
+    private String unSelect = "", optionSelected = "";
     private OnValueItemClickListener listener;
     private Handler handler;
     int style;
@@ -59,18 +67,33 @@ public class OptionPop extends PopupWindow implements View.OnClickListener {
         this.style = style;
         this.handler = handler;
         this.listener = listener;
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_choose_pop, null);
+        view = LayoutInflater.from(context).inflate(R.layout.layout_choose_pop, null);
         initView(view);
-        if (info.options != null) {
-            unSelect = ((CommodityInfoActivity) context).getUnSelect();
+        if (info != null) {
+            String picUrl;
+            picUrl = PublicFunc.host + "Public/Uploads/device/" + info.pic;
+            Glide
+                    .with(mContext)
+                    .load(picUrl)
+                    .placeholder(R.drawable.loading)
+                    .into(new SimpleTarget<GlideDrawable>() {
+                        @Override
+                        public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                            littlePicImageView.setImageDrawable(resource);
+                        }
+                    });
+        }
+        validOptions = getValidOptions();
+        if (validOptions != null && validOptions.size() > 0) {
+            getUnSelect();
             setHeaderText(unSelect);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             optionsView.setLayoutManager(linearLayoutManager);
-            OptionItemAdapter adapter = new OptionItemAdapter(info.options, new OnValueItemClickListener() {
+            OptionItemAdapter adapter = new OptionItemAdapter(validOptions, new OnValueItemClickListener() {
                 @Override
                 public void onClick(int optionIndex, int valueIndex) {
-                    unSelect = ((CommodityInfoActivity) context).getUnSelect();
+                    unSelect = getUnSelect();
                     LogUtils.d(MyApplication.TAG, unSelect);
                     if (unSelect.isEmpty()) {
                         optionSelected = getOptionSelected();
@@ -91,15 +114,20 @@ public class OptionPop extends PopupWindow implements View.OnClickListener {
         this.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         //设置SelectPicPopupWindow弹出窗体可点击
         this.setFocusable(true);
+        //设置运行在窗体外点击消失
+        this.setOutsideTouchable(true);
         //实例化一个ColorDrawable颜色为半透明
-        ColorDrawable dw = new ColorDrawable(context.getResources().getColor(R.color.colorWhiteSmoke));
+        ColorDrawable dw = new ColorDrawable(context.getResources().getColor(R.color.colorLightTrans));
         //设置SelectPicPopupWindow弹出窗体的背景
         this.setBackgroundDrawable(dw);
         // 设置弹出窗体显示时的动画，从底部向上弹出
         this.setAnimationStyle(R.style.take_photo_anim);
     }
 
+
     private void initView(View view) {
+        closeButton = (Button) view.findViewById(R.id.id_close_button);
+        littlePicImageView = (ImageView) view.findViewById(R.id.id_little_pic_image_view);
         headTextView = (TextView) view.findViewById(R.id.id_un_select_option_text);
         addButton = (ImageButton) view.findViewById(R.id.id_add_num);
         minusButton = (ImageButton) view.findViewById(R.id.id_minus_num);
@@ -108,11 +136,16 @@ public class OptionPop extends PopupWindow implements View.OnClickListener {
         buyBtn = (TextView) view.findViewById(R.id.id_buy);
         okBtn = (TextView) view.findViewById(R.id.id_ok);
         optionsView = (RecyclerView) view.findViewById(R.id.id_yq_option_list);
+        closeButton.setOnClickListener(this);
         addButton.setOnClickListener(this);
         minusButton.setOnClickListener(this);
         addShoppingCartBtn.setOnClickListener(this);
         buyBtn.setOnClickListener(this);
         okBtn.setOnClickListener(this);
+    }
+
+    public void setStyle(int style) {
+        this.style = style;
         if (STYLE_KEEP == style || STYLE_BUY == style) {
             addShoppingCartBtn.setVisibility(View.GONE);
             buyBtn.setVisibility(View.GONE);
@@ -124,6 +157,44 @@ public class OptionPop extends PopupWindow implements View.OnClickListener {
         }
     }
 
+    public List<ProductOption> getValidOptions() {
+        List<ProductOption> result = new ArrayList<ProductOption>();
+        if (info.options == null) return null;
+        for (ProductOption option : info.options) {
+            if (option.values != null && option.values.size() > 0) {
+                result.add(option);
+            }
+        }
+        return result;
+    }
+
+    public String getUnSelect() {
+        StringBuilder builder = new StringBuilder("");
+        for (ProductOption option : validOptions) {
+            if (option.selected == -1) {
+                if (builder.length() == 0)
+                    builder.append(option.name);
+                else
+                    builder.append("  ").append(option.name);
+            }
+        }
+        return builder.toString();
+    }
+
+    public String getOptionSelected() {
+        StringBuilder builder = new StringBuilder("");
+
+        if (validOptions != null) {
+            for (ProductOption option : validOptions) {
+                if (builder.length() == 0)
+                    builder.append(option.name).append(":").append(option.values.get(option.selected));
+                else
+                    builder.append("|").append(option.name).append(":").append(option.values.get(option.selected));
+            }
+        } else
+            builder.append("数量:" + num + "件");
+        return builder.toString();
+    }
 
     public void setHeaderText(String str) {
         headTextView.setText(str);
@@ -141,19 +212,6 @@ public class OptionPop extends PopupWindow implements View.OnClickListener {
         }
     }
 
-    public String getOptionSelected() {
-        StringBuilder builder = new StringBuilder("");
-        if (info.options != null) {
-            for (ProductOption option : info.options) {
-                if (builder.length() == 0)
-                    builder.append(option.name).append(":").append(option.values.get(option.selected));
-                else
-                    builder.append("|").append(option.name).append(":").append(option.values.get(option.selected));
-            }
-        }
-        return builder.toString();
-    }
-
     private void setNumText(String numStr) {
         numTextView.setText(numStr);
     }
@@ -161,31 +219,34 @@ public class OptionPop extends PopupWindow implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.id_close_button:
+                show(null);
+                break;
             case R.id.id_add_num:
                 if (num < Integer.valueOf(info.number)) num++;
                 setNumText(String.valueOf(num));
-                listener.onClick(-1,-1);
+                listener.onClick(-1, -1);
                 break;
             case R.id.id_minus_num:
                 if (num > 1) num--;
                 setNumText(String.valueOf(num));
-                listener.onClick(-1,-1);
+                listener.onClick(-1, -1);
                 break;
             case R.id.id_add_shopping_cart:
-                if (info.options != null && !unSelect.isEmpty()) {
+                if (validOptions != null && !getUnSelect().isEmpty()) {
                     Toast.makeText(mContext, "请选择 " + unSelect, Toast.LENGTH_SHORT).show();
                 } else
                     addProductToShoppingCart();
                 break;
             case R.id.id_buy:
-                if (info.options != null && !unSelect.isEmpty()) {
+                if (validOptions != null && !unSelect.isEmpty()) {
                     Toast.makeText(mContext, "请选择 " + unSelect, Toast.LENGTH_SHORT).show();
                 } else {
                     ConfirmOrder();
                 }
                 break;
             case R.id.id_ok:
-                if (info.options != null && !unSelect.isEmpty()) {
+                if (validOptions != null && !getUnSelect().isEmpty()) {
                     Toast.makeText(mContext, "请选择 " + unSelect, Toast.LENGTH_SHORT).show();
                 } else {
                     if (STYLE_KEEP == style) {
@@ -214,11 +275,12 @@ public class OptionPop extends PopupWindow implements View.OnClickListener {
             ArrayList<ShoppingItem> list = new ArrayList<ShoppingItem>();
             list.add(item);
             Intent intent = new Intent("com.netsun.intent.ACTION_CONFIRM_ORDER");
-            Bundle bundle= new Bundle();
-            bundle.putParcelableArrayList("shoppinglist",list);
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("shoppinglist", list);
             intent.putExtras(bundle);
             mContext.startActivity(intent);
         }
+        show(null);
     }
 
     public void addProductToShoppingCart() {
@@ -229,7 +291,6 @@ public class OptionPop extends PopupWindow implements View.OnClickListener {
                     info.id, optionSelected).findFirst(ShoppingItem.class);
             if (item != null) {
                 item.setNum(num + item.getNum());
-//                item.updateAll("goodsId = ? and options=?", item.goodsId, item.options);
                 item.update(item.getId());
             } else {
                 item = new ShoppingItem();

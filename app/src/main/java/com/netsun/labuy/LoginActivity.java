@@ -19,9 +19,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.netsun.labuy.utils.LogUtils;
-import com.netsun.labuy.utils.LogonListener;
-import com.netsun.labuy.utils.MyApplication;
 import com.netsun.labuy.utils.PublicFunc;
 
 /**
@@ -60,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         String[] arr = PublicFunc.getUserAndPassword();
-        if(arr != null) {
+        if (arr != null) {
             mAccountView.setText(arr[0]);
             mPasswordView.setText(arr[1]);
         }
@@ -75,21 +72,16 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        backView  = (ImageView)findViewById(R.id.back);
+        backView = (ImageView) findViewById(R.id.back);
         backView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
-        index = getIntent().getIntExtra("index",0);
+        index = getIntent().getIntExtra("index", 0);
     }
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
     private void attemptLogin() {
         if (mAuthTask != null) {
             return;
@@ -127,13 +119,13 @@ public class LoginActivity extends AppCompatActivity {
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
-//            focusView.requestFocus();
+            focusView.requestFocus();
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(account, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask.execute();
         }
     }
 
@@ -193,47 +185,39 @@ public class LoginActivity extends AppCompatActivity {
         private final String mPassword;
 
         UserLoginTask(String account, String password) {
-            if (LogUtils.level == LogUtils.DEBUG) {
-                account = "wssyb";
-                password = "123456";
-            }
             mAccount = account;
             mPassword = password;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-            PublicFunc.login(mAccount, mPassword, new LogonListener() {
-                @Override
-                public void LogonResult(final boolean result) {
-                    mAuthTask = null;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showProgress(false);
-                            if (result) {
-                                String url = "http://www.dev.labuy.cn/app.php/Address?token="+MyApplication.token+"&type=address";
-                                PublicFunc.getReceiveAddressList(url);
-                                Intent intent = new Intent();
-                                intent.putExtra("index",index);
-                                setResult(RESULT_OK,intent);
-                                finish();
-                            } else {
-                                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                                mPasswordView.requestFocus();
-                            }
-                        }
-                    });
+            boolean result= PublicFunc.login(mAccount, mPassword);
+            long startTime = System.currentTimeMillis();
+            long loadingTime = System.currentTimeMillis() - startTime;
+            if (loadingTime < 500) {
+                try {
+                    Thread.sleep(500 - loadingTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            });
-            // TODO: register the new account here.
-            return true;
+            }
+            return result;
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
-
+            mAuthTask = null;
+            if (success) {
+                showProgress(false);
+                PublicFunc.getReceiveAddressList();
+                Intent intent = new Intent();
+                intent.putExtra("index", index);
+                setResult(RESULT_OK, intent);
+                finish();
+            } else {
+                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                mPasswordView.requestFocus();
+            }
         }
 
         @Override

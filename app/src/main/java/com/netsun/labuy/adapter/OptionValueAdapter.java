@@ -65,7 +65,7 @@ public class OptionValueAdapter extends RecyclerView.Adapter<OptionValueAdapter.
         if (position == selected)
             holder.value.setBackgroundResource(R.drawable.button_bg_red);
         else
-            holder.value.setBackgroundResource(R.drawable.button_gray);
+            holder.value.setBackgroundResource(R.drawable.value_normor);
     }
 
     @Override
