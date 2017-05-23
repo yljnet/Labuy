@@ -3,8 +3,11 @@ package com.netsun.labuy.adapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +23,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.netsun.labuy.CommodityInfoActivity;
+import com.netsun.labuy.activity.MerchandiseDisplayActivity;
 import com.netsun.labuy.R;
-import com.netsun.labuy.db.ShoppingItem;
+import com.netsun.labuy.db.Goods;
 import com.netsun.labuy.utils.OnRemoveShoppingCartItemListener;
 import com.netsun.labuy.utils.OnShoppingCartItemSelectedistener;
 import com.netsun.labuy.utils.PublicFunc;
@@ -38,10 +41,11 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
     public static final int STYLE_ORDER = 2;
     public static final int STYLE_VIEW = 3;
     Context mContext;
-    ArrayList<ShoppingItem> shoppingItems;
+    ArrayList<Goods> dataList;
     ArrayList<ShoppingCartItemViewHolder> holderList = new ArrayList<ShoppingCartItemViewHolder>();
     OnShoppingCartItemSelectedistener onShoppingCartItemSelectedistener;
     OnRemoveShoppingCartItemListener onRemoveShoppingCartItemListener;
+    Handler handler;
     private boolean canClickListen = true;
     private int style = STYLE_VIEW;
     private boolean onBind;
@@ -59,8 +63,12 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
         this.onShoppingCartItemSelectedistener = onShoppingCartItemSelectedistener;
     }
 
-    public ShoppingCartItemAdapter(ArrayList<ShoppingItem> shoppingItems) {
-        this.shoppingItems = shoppingItems;
+    public ShoppingCartItemAdapter(ArrayList<Goods> goodsList) {
+        this.dataList = goodsList;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 
     public void setCanClickListen(boolean canClickListen) {
@@ -77,6 +85,7 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
         holder.minusButton.setOnClickListener(this);
         holder.goodsCB.setOnClickListener(this);
         holder.rootView.setOnClickListener(this);
+        holder.editOptionTV.setOnClickListener(this);
         return holder;
     }
 
@@ -84,9 +93,13 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
     public void onBindViewHolder(final ShoppingCartItemViewHolder holder, int position) {
         onBind = true;
         if (holder != null) {
-            ShoppingItem item = shoppingItems.get(position);
-            String picUrl;
+            Goods item = dataList.get(position);
+            String picUrl = "";
+            String goods_type = item.getGoods_type();
+            if (TextUtils.equals(goods_type,PublicFunc.DEVICER))
             picUrl = PublicFunc.host + "Public/Uploads/device/" + item.getPicUrl();
+            else if (TextUtils.equals(goods_type,PublicFunc.PART))
+                picUrl = PublicFunc.host + "Public/Uploads/parts/" + item.getPicUrl();
             holder.goodsCB.setChecked(item.isSelected());
             Glide
                     .with(mContext)
@@ -121,7 +134,7 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
                 holder.showView.setVisibility(View.GONE);
                 holder.editView.setVisibility(View.VISIBLE);
                 holder.editNumTV.setText(String.valueOf(item.getNum()));
-                if (item.getOptions() == null ||item.getOptions().isEmpty())
+                if (item.getOptions() == null || item.getOptions().isEmpty())
                     holder.editOptionTV.setVisibility(View.GONE);
                 else
                     holder.editOptionTV.setText(item.getOptions());
@@ -132,8 +145,8 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
 
     @Override
     public int getItemCount() {
-        if (shoppingItems != null)
-            return shoppingItems.size();
+        if (dataList != null)
+            return dataList.size();
         else
             return 0;
     }
@@ -141,9 +154,17 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
     @Override
     public void onClick(View view) {
         final int position = (Integer) view.getTag();
-        ShoppingCartItemViewHolder holder = holderList.get(position);
-        ShoppingItem item = shoppingItems.get(position);
+        final ShoppingCartItemViewHolder holder = holderList.get(position);
+        Goods item = dataList.get(position);
         switch (view.getId()) {
+            case R.id.id_edit_option_text_view:
+                if (handler != null) {
+                    Message msg = new Message();
+                    msg.what = PublicFunc.HANDLER_CODE_EDIT_OPTION;
+                    msg.obj = item;
+                    handler.sendMessage(msg);
+                }
+                break;
             case R.id.id_delete_item:
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 builder.setTitle("提示");
@@ -155,7 +176,7 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
                             onRemoveShoppingCartItemListener.onRemoveItem(position);
                     }
                 });
-                builder.setNegativeButton("取消",null);
+                builder.setNegativeButton("取消", null);
                 builder.show();
                 break;
             case R.id.id_add_num:
@@ -185,7 +206,8 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
                 break;
             case R.id.root_layout:
                 if (style == STYLE_VIEW) {
-                    Intent intent = new Intent(mContext, CommodityInfoActivity.class);
+                    Intent intent = new Intent(mContext, MerchandiseDisplayActivity.class);
+                    intent.putExtra("mode", item.getGoods_type());
                     intent.putExtra("id", item.getGoodsId());
                     mContext.startActivity(intent);
                 }

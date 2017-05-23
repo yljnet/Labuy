@@ -16,9 +16,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netsun.labuy.ConfirmOrderActivity;
-import com.netsun.labuy.EditAddressActivity;
-import com.netsun.labuy.ManageAddressActivity;
+import com.netsun.labuy.activity.ConfirmOrderActivity;
+import com.netsun.labuy.activity.EditAddressActivity;
+import com.netsun.labuy.activity.ManageAddressActivity;
 import com.netsun.labuy.R;
 import com.netsun.labuy.adapter.ReceiveAddressAdapter;
 import com.netsun.labuy.db.ReceiveAddress;

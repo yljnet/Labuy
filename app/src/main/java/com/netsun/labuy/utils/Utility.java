@@ -1,7 +1,5 @@
 package com.netsun.labuy.utils;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -12,9 +10,7 @@ import com.netsun.labuy.db.Province;
 import com.netsun.labuy.db.ReceiveAddress;
 import com.netsun.labuy.db.Second;
 import com.netsun.labuy.db.Third;
-import com.netsun.labuy.gson.Commodity;
-import com.netsun.labuy.gson.ProductInfo;
-import com.netsun.labuy.gson.YQList;
+import com.netsun.labuy.gson.Merchandise;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,8 +18,7 @@ import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
-
-import static com.netsun.labuy.utils.MyApplication.token;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/1/24.
@@ -169,16 +164,11 @@ public class Utility {
         try {
             JSONObject root = new JSONObject(response);
             if (root.getInt("code") == 200) {
-                MyApplication.token = null;
-                MyApplication.isLogon = false;
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("token", token);
-                editor.commit();
                 return true;
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            return false;
+//            e.printStackTrace();
         }
         return false;
     }
@@ -277,32 +267,24 @@ public class Utility {
      * @param response
      * @return
      */
-    public static YQList handleYQListResponse(String response) {
-        YQList yqList = new YQList();
+    public static List<Merchandise> handleMerchandiseListResponse(String category_type,String response) {
+        List<Merchandise> result =new ArrayList<Merchandise>();
         try {
             JSONObject root = new JSONObject(response);
-            yqList.code = root.getInt("code");
-            yqList.info = root.getString("info");
-            if (!root.isNull("data")) {
+
+            if (root.getInt("code") == 200 &&!root.isNull("data")) {
                 JSONArray commodities = root.getJSONArray("data");
+                Gson gson = new Gson();
                 for (int i = 0; i < commodities.length(); i++) {
-                    JSONObject node = commodities.getJSONObject(i);
-                    Commodity commodity = new Commodity();
-                    commodity.id = node.getString("id");
-                    commodity.cate_id = node.getString("category");
-                    commodity.name = node.getString("name");
-                    commodity.brand = node.getString("poster");
-                    commodity.logo = node.getString("pic");
-                    commodity.price = node.getString("price");
-                    if (null == yqList.commodities)
-                        yqList.commodities = new ArrayList<Commodity>();
-                    yqList.commodities.add(commodity);
+                    Merchandise merchandise = gson.fromJson(commodities.getString(i),Merchandise.class);
+                    merchandise.caterory_type = category_type;
+                    result.add(merchandise);
                 }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return yqList;
+        return result;
     }
 
     /**
@@ -311,20 +293,20 @@ public class Utility {
      * @param response
      * @return
      */
-    public static ProductInfo handleYQInfoResponse(String response) {
-        ProductInfo info = null;
+    public static Merchandise handleMerchandiseResponse(String response) {
+        Merchandise merchandise = null;
         try {
             JSONObject root = new JSONObject(response);
             String dataStr = root.getString("data");
             Gson gson = new Gson();
-            info = gson.fromJson(dataStr, ProductInfo.class);
-            if (info != null) {
-                LogUtils.d(MyApplication.TAG, info.name);
+            merchandise = gson.fromJson(dataStr, Merchandise.class);
+            if (merchandise != null) {
+                LogUtils.d(MyApplication.TAG, merchandise.name);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return info;
+        return merchandise;
     }
 
     /**

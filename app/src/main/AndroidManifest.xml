@@ -5,6 +5,7 @@
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -20,6 +21,7 @@
             android:name=".SplashActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,26 +32,32 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/MainActivityTheme"
+            android:theme="@style/LightAcitvityTheme"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".LoginActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_login"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme"
             android:windowSoftInputMode="adjustPan|stateHidden" /> <!-- 弹出输入法不会把布局给顶上去 -->
         <activity
-            android:name=".CommodityInfoActivity"
-            android:screenOrientation="portrait" />
+            android:name=".MerchandiseDisplayActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme" />
         <activity
             android:name=".SearchYQByKeyActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".ConfirmOrderActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="com.netsun.intent.ACTION_CONFIRM_ORDER" />
@@ -59,10 +67,12 @@
         </activity>
         <activity
             android:name=".ManageAddressActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme" />
         <activity
             android:name=".EditAddressActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme">
             <intent-filter>
                 <action android:name="com.netsun.intent.ACTION_EDIT_ADDRESS" />
 
@@ -71,16 +81,28 @@
         </activity>
         <activity
             android:name=".ChooseAreaActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme" />
         <activity
             android:name=".OrderInfoActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme" />
         <activity
             android:name=".SettingsActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme" />
         <activity
             android:name=".OrderManagerActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme" />
+        <activity
+            android:name=".SearchResultActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme" />
+        <activity
+            android:name=".CategoryActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/LightAcitvityTheme" />
     </application>
 
 </manifest>

@@ -48,10 +48,12 @@ public class UpRefreshLayout extends RelativeLayout implements View.OnTouchListe
     private float radio = 2;
 
     private View contentView;
+    private View bottomView;
 
     public UpRefreshLayout(Context context) {
         super(context);
     }
+
     public UpRefreshLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -76,14 +78,11 @@ public class UpRefreshLayout extends RelativeLayout implements View.OnTouchListe
         if (!isLayouted) {
             //第一次执行布局
             contentView = getChildAt(0);
+            bottomView = getChildAt(1);
             contentView.setOnTouchListener(this);
-            refreshDist = 45;
             isLayouted = true;
         }
-        if (canPull) {
-            contentView.layout(0, 0, getWidth(), getHeight());
-        } else
-            super.onLayout(changed, l, t, r, b);
+        super.onLayout(changed,l,t,r,b);
     }
 
     @Override

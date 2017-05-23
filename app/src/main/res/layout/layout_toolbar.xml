@@ -10,8 +10,7 @@
         android:id="@+id/tool_bar_title_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Title" />
+        android:layout_gravity="center_horizontal"/>
 
     <Button
         android:id="@+id/id_tool_bar_ritht_button"

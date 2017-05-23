@@ -14,14 +14,15 @@
             android:id="@+id/goods_image"
             android:layout_width="150dp"
             android:layout_height="150dp"
+            android:layout_gravity="center"
             android:scaleType="fitXY" />
 
         <TextView
             android:id="@+id/goods_price"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:padding="5dp"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             android:textColor="@android:color/holo_red_dark"/>
 
         <TextView

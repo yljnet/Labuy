@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:weightSum="1">
+
+        <Button
+            android:id="@+id/check_button"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:drawableLeft="@drawable/list"
+            android:textColor="#fff" />
+
+        <TextView
+            android:id="@+id/search_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/search_text_bg"
+            android:drawableLeft="@drawable/search"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="请输入搜索关键字"
+            android:textColor="#fff"
+            android:textColorHint="#fff" />
+    </android.support.v7.widget.Toolbar>
+
+    <com.netsun.labuy.utils.CarouselView
+        android:id="@+id/id_carousel"
+        android:layout_width="match_parent"
+        android:layout_height="150dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/id_class_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.netsun.labuy.OrderManagerActivity;
+import com.netsun.labuy.activity.OrderManagerActivity;
 import com.netsun.labuy.R;
-import com.netsun.labuy.SettingsActivity;
+import com.netsun.labuy.activity.SettingsActivity;
 import com.netsun.labuy.utils.PublicFunc;
 
 /**

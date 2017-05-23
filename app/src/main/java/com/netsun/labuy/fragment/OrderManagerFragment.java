@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,8 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.netsun.labuy.OrderInfoActivity;
-import com.netsun.labuy.OrderManagerActivity;
+import com.netsun.labuy.activity.OrderInfoActivity;
+import com.netsun.labuy.activity.OrderManagerActivity;
 import com.netsun.labuy.R;
 import com.netsun.labuy.adapter.OrderManagerItemAdapter;
 import com.netsun.labuy.utils.HttpUtils;
@@ -38,7 +39,7 @@ import okhttp3.Response;
  * Created by Administrator on 2017/3/24.
  */
 
-public class OrderManagerFragment extends android.support.v4.app.Fragment {
+public class OrderManagerFragment extends Fragment {
     View view;
     UpRefreshLayout orderManagerRefreshLayout;
     RecyclerView orderRecyclerView;
@@ -65,12 +66,27 @@ public class OrderManagerFragment extends android.support.v4.app.Fragment {
     };
 
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
-    public OrderManagerFragment(String title, int mode) {
-        this.title = title;
-        this.mode = mode;
+    public static OrderManagerFragment newInstance(String title, int mode) {
+
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        args.putInt("mode", mode);
+        OrderManagerFragment fragment = new OrderManagerFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            this.title = bundle.getString("title");
+            this.mode = bundle.getInt("mode");
+        }
         orderInfos = new ArrayList<OrderInfo>();
     }
 
@@ -121,6 +137,7 @@ public class OrderManagerFragment extends android.support.v4.app.Fragment {
                 orderManagerRefreshLayout.refreshFinish(UpRefreshLayout.REFRESH_FAIL);
                 if (currentPage > 1)
                     currentPage--;
+                if (getActivity() == null) return;
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -141,6 +158,7 @@ public class OrderManagerFragment extends android.support.v4.app.Fragment {
                 } else {
                     currentPage--;
                 }
+                if (getActivity() == null) return;
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

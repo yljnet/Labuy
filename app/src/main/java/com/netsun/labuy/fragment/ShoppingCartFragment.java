@@ -1,8 +1,13 @@
 package com.netsun.labuy.fragment;
 
 import android.app.Fragment;
+import android.app.LoaderManager;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,27 +21,31 @@ import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.netsun.labuy.ConfirmOrderActivity;
-import com.netsun.labuy.MainActivity;
+import com.netsun.labuy.activity.ConfirmOrderActivity;
+import com.netsun.labuy.activity.MainActivity;
 import com.netsun.labuy.R;
 import com.netsun.labuy.adapter.ShoppingCartItemAdapter;
-import com.netsun.labuy.db.ShoppingItem;
+import com.netsun.labuy.db.Goods;
+import com.netsun.labuy.gson.Merchandise;
+import com.netsun.labuy.gson.ProductOption;
 import com.netsun.labuy.utils.LogUtils;
 import com.netsun.labuy.utils.MyApplication;
 import com.netsun.labuy.utils.OnRemoveShoppingCartItemListener;
 import com.netsun.labuy.utils.OnShoppingCartItemSelectedistener;
+import com.netsun.labuy.utils.OnValueItemClickListener;
+import com.netsun.labuy.utils.OptionPop;
+import com.netsun.labuy.utils.PublicFunc;
 import com.netsun.labuy.utils.SpaceItemDecoration;
 
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Administrator on 2017/3/13.
  */
 
-public class ShoppingCartFragment extends Fragment {
+public class ShoppingCartFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     View view;
     Toolbar toolbar;
     TextView titleTV;
@@ -46,9 +55,72 @@ public class ShoppingCartFragment extends Fragment {
     CheckBox selectAll;
     Button toBuyBtn;
 
-    private ArrayList<ShoppingItem> shoppingItems = new ArrayList<ShoppingItem>();
+    int mode;
+    private ArrayList<Goods> goodsList = new ArrayList<Goods>();
     private ShoppingCartItemAdapter adapter;
     private int selectCount = 0;
+    OptionPop optionPop;
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case PublicFunc.HANDLER_CODE_EDIT_OPTION:
+                    final Goods goods = (Goods) msg.obj;
+                    if (goods == null) return;
+                    PublicFunc.getMerchandise(goods.getGoods_type(), goods.getGoodsId(), new Handler() {
+                        @Override
+                        public void handleMessage(Message msg) {
+                            if (msg.what == 1) {
+                                Merchandise merchandise = (Merchandise) msg.obj;
+                                String[] optionArr = goods.getOptions().split("\\|");
+                                if (optionArr.length > 0) {
+                                    for (int i = 0; i < optionArr.length; i++) {
+                                        String[] optionDetial = optionArr[i].split(":");
+                                        for (ProductOption option : merchandise.options) {
+                                            if (option.name.equals(optionDetial[0])) {
+                                                for (int j = 0; j < option.values.size(); j++) {
+                                                    String value = option.values.get(j);
+                                                    if (value.equals(optionDetial[1])) {
+                                                        option.selected = j;
+                                                        break;
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (optionPop != null)
+                                    optionPop.show(null);
+                                optionPop = new OptionPop(getActivity(), merchandise, new Handler() {
+                                    @Override
+                                    public void handleMessage(Message msg) {
+                                        switch (msg.what) {
+                                            case PublicFunc.HANDLER_CODE_REFRESH_SHOPPINGCART:
+                                                goodsList.clear();
+                                                goodsList.addAll(DataSupport.findAll(Goods.class));
+                                                adapter.notifyDataSetChanged();
+                                                break;
+                                        }
+                                    }
+                                }, OptionPop.STYLE_KEEP,
+                                        new OnValueItemClickListener() {
+                                            @Override
+                                            public void onClick(int optionIndex, int valueIndex) {
+
+                                            }
+                                        });
+                                optionPop.setStyle(optionPop.STYLE_KEEP);
+                                optionPop.show(shoppingList);
+                            }
+                        }
+                    });
+                    break;
+            }
+        }
+    };
 
     public static ShoppingCartFragment newInstance() {
 
@@ -91,7 +163,7 @@ public class ShoppingCartFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 boolean isSelected = selectAll.isChecked();
-                for (ShoppingItem item : shoppingItems) {
+                for (Goods item : goodsList) {
                     item.setSelected(isSelected);
                 }
                 adapter.notifyDataSetChanged();
@@ -103,8 +175,8 @@ public class ShoppingCartFragment extends Fragment {
             public void onClick(View view) {
                 if (selectCount > 0) {
                     Bundle bundle = new Bundle();
-                    ArrayList<ShoppingItem> selects = new ArrayList<ShoppingItem>();
-                    for (ShoppingItem item : shoppingItems) {
+                    ArrayList<Goods> selects = new ArrayList<Goods>();
+                    for (Goods item : goodsList) {
                         if (item.isSelected()) {
                             selects.add(item);
                         }
@@ -136,7 +208,7 @@ public class ShoppingCartFragment extends Fragment {
         getShoppingList();
         changeView();
         selectCount = changeButtonState();
-        adapter = new ShoppingCartItemAdapter(shoppingItems);
+        adapter = new ShoppingCartItemAdapter(goodsList);
         adapter.setOnShoppingCartItemSelectedistener(new OnShoppingCartItemSelectedistener() {
             @Override
             public void onSelected(int id, boolean isSelect) {
@@ -144,12 +216,13 @@ public class ShoppingCartFragment extends Fragment {
                 selectCount = changeButtonState();
             }
         });
+        adapter.setHandler(handler);
         adapter.setOnRemoveShoppingCartItemListener(new OnRemoveShoppingCartItemListener() {
             @Override
             public void onRemoveItem(final int id) {
-                ShoppingItem item = shoppingItems.get(id);
+                Goods item = goodsList.get(id);
                 item.delete();
-                shoppingItems.remove(id);
+                goodsList.remove(id);
                 adapter.notifyDataSetChanged();
                 changeView();
                 changeButtonState();
@@ -163,9 +236,9 @@ public class ShoppingCartFragment extends Fragment {
 
     private void changeCheckBoxState() {
         boolean isAllSelected = true;
-        if (shoppingItems.size() == 0) isAllSelected = false;
+        if (goodsList.size() == 0) isAllSelected = false;
         else
-            for (ShoppingItem item : shoppingItems) {
+            for (Goods item : goodsList) {
                 if (!item.isSelected()) {
                     isAllSelected = false;
                     break;
@@ -178,7 +251,7 @@ public class ShoppingCartFragment extends Fragment {
     }
 
     private void changeView() {
-        if (shoppingItems.size() == 0) {
+        if (goodsList.size() == 0) {
             shoppingList.setVisibility(View.GONE);
             emptyView.setVisibility(View.VISIBLE);
             selectAll.setChecked(false);
@@ -191,18 +264,14 @@ public class ShoppingCartFragment extends Fragment {
     }
 
     private void getShoppingList() {
-        List<ShoppingItem> items = DataSupport.findAll(ShoppingItem.class);
-        if (items.size() > 0) {
-            shoppingItems.clear();
-            for (ShoppingItem item : items)
-                shoppingItems.add(item);
-        }
-        LogUtils.d(MyApplication.TAG,"ShoppingCartCount:"+shoppingItems.size());
+        goodsList.clear();
+        goodsList.addAll(DataSupport.findAll(Goods.class));
+        LogUtils.d(MyApplication.TAG, "ShoppingCartCount:" + goodsList.size());
     }
 
     private int changeButtonState() {
         int count = 0;
-        for (ShoppingItem item : shoppingItems) {
+        for (Goods item : goodsList) {
             if (item.isSelected()) {
                 count += item.getNum();
             }
@@ -217,11 +286,10 @@ public class ShoppingCartFragment extends Fragment {
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        LogUtils.d(MyApplication.TAG,"hidder"+ hidden);
         if (hidden) {
             if (selectAll.isChecked())
                 selectAll.performClick();
-            if (("完成").equals(rightBtn.getText().toString())){
+            if (("完成").equals(rightBtn.getText().toString())) {
                 rightBtn.performClick();
             }
         } else {
@@ -230,5 +298,21 @@ public class ShoppingCartFragment extends Fragment {
             adapter.notifyDataSetChanged();
         }
         super.onHiddenChanged(hidden);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return null;
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }

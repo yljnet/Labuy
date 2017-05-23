@@ -8,11 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.netsun.labuy.R;
 import com.netsun.labuy.adapter.DetialItem;
 import com.netsun.labuy.adapter.ProductDetialAdapter;
-import com.netsun.labuy.gson.ProductInfo;
+import com.netsun.labuy.gson.Merchandise;
 import com.netsun.labuy.gson.ProductMethod;
 import com.netsun.labuy.gson.ProductParam;
 
@@ -27,33 +28,49 @@ public class ProductInfoDetailsFragment extends Fragment {
     View view;
     ListView detialView;
 
-    ProductInfo info;
+    Merchandise merchandise;
     ArrayList<String> paramlist = new ArrayList<String>();
     String[] names = {"名称", "适用行业领域", "检测样品", "目标检测物", "参考标准名称"};
 
-    public ProductInfoDetailsFragment(ProductInfo info) {
-        this.info = info;
+    public static ProductInfoDetailsFragment newInstance(Merchandise merchandise) {
+
+        Bundle args = new Bundle();
+
+        ProductInfoDetailsFragment fragment = new ProductInfoDetailsFragment();
+        args.putParcelable("goods", merchandise);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        if (bundle != null)
+            merchandise = bundle.getParcelable("goods");
+        else
+            Toast.makeText(getContext(), "界面初始化失败", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         List<DetialItem> detials = new ArrayList<DetialItem>();
-        if (info != null) {
-            if (info.params != null) {
+        if (merchandise != null) {
+            if (merchandise.params != null) {
                 detials.add(new DetialItem(DetialItem.TYPE_TITLE, "产品主要参数"));
-                for (ProductParam param : info.params) {
+                for (ProductParam param : merchandise.params) {
                     String s = param.name + ":" + param.value;
                     detials.add(new DetialItem(DetialItem.TYPE_TEXT, s));
                     paramlist.add(s);
                 }
             }
-            if (info.intro != null) {
+            if (merchandise.intro != null) {
                 detials.add(new DetialItem(DetialItem.TYPE_TITLE, "产品介绍"));
-                detials.add(new DetialItem(DetialItem.TYPE_HTML, info.intro));
+                detials.add(new DetialItem(DetialItem.TYPE_HTML, merchandise.intro));
             }
 
-            if(info.appMethods != null) {
+            if(merchandise.appMethods != null) {
                 detials.add(new DetialItem(DetialItem.TYPE_TITLE, "应用方法"));
                 ProductMethod head = new ProductMethod();
                 head.name = "名称";
@@ -62,7 +79,7 @@ public class ProductInfoDetailsFragment extends Fragment {
                 head.target = "目标检测物";
                 head.standard = "参考标准名称";
                 detials.add(new DetialItem(head));
-                for (ProductMethod method : info.appMethods) {
+                for (ProductMethod method : merchandise.appMethods) {
                     detials.add(new DetialItem(method));
                 }
             }

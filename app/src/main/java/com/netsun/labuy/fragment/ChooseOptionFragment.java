@@ -9,19 +9,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.netsun.labuy.CommodityInfoActivity;
+import com.netsun.labuy.activity.MerchandiseDisplayActivity;
 import com.netsun.labuy.R;
-import com.netsun.labuy.gson.ProductInfo;
-import com.netsun.labuy.gson.ProductOption;
+import com.netsun.labuy.gson.Merchandise;
 import com.netsun.labuy.utils.OptionPop;
 import com.netsun.labuy.utils.PublicFunc;
-
-import java.util.List;
 
 /**
  * Created by Administrator on 2017/3/8.
@@ -37,40 +32,57 @@ public class ChooseOptionFragment extends Fragment {
     private TextView posterTV;
     private TextView countryText;
     private TextView cateTextView;
-    private ProductInfo info;
+    private Merchandise merchandise;
     private String unSelect;
 
-    public ChooseOptionFragment(ProductInfo info) {
-        this.info = info;
+    public static ChooseOptionFragment newInstance(Merchandise merchandise) {
+
+        Bundle args = new Bundle();
+
+        ChooseOptionFragment fragment = new ChooseOptionFragment();
+        args.putParcelable("goods", merchandise);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        if (bundle != null)
+            merchandise = bundle.getParcelable("goods");
+        else
+            Toast.makeText(getContext(), "界面初始化失败", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        String picUrl;
-        if (info != null) {
-            picUrl = PublicFunc.host + "Public/Uploads/device/" + info.pic;
+        String picUrl = null;
+        if (merchandise != null) {
+            if (merchandise.caterory_type.equals(PublicFunc.DEVICER))
+                picUrl = PublicFunc.host + "Public/Uploads/device/" + merchandise.pic;
+            else if (merchandise.caterory_type.equals(PublicFunc.PART))
+                picUrl = PublicFunc.host + "Public/Uploads/parts/" + merchandise.pic;
+            else picUrl = "";
             pic.setScaleType(ImageView.ScaleType.CENTER_CROP);
             Glide.with(getActivity()).load(R.drawable.loading).asGif().into(pic);
             pic.setScaleType(ImageView.ScaleType.FIT_XY);
             Glide
                     .with(getActivity())
                     .load(picUrl)
-                    .into(new SimpleTarget<GlideDrawable>() {
-                        @Override
-                        public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                            pic.setImageDrawable(resource);
-                        }
-                    });
-            name.setText(info.name);
-            posterTV.setText(info.poster);
-            countryText.setText(info.country);
-            cateTextView.setText(info.category);
-            price.setText("¥ " + info.price);
+                    .placeholder(R.drawable.placeholder)
+                    .crossFade()
+                    .into(pic);
+            name.setText(merchandise.name);
+            posterTV.setText(merchandise.poster);
+            countryText.setText(merchandise.country);
+            cateTextView.setText(merchandise.category_name);
+            price.setText("¥ " + merchandise.price);
             options.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ((CommodityInfoActivity) getActivity()).showOptionPop(OptionPop.STYLE_SELECT);
+                    ((MerchandiseDisplayActivity) getActivity()).showOptionPop(OptionPop.STYLE_SELECT);
                 }
             });
         }

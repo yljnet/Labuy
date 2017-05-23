@@ -5,12 +5,16 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Base64;
+import android.view.inputmethod.InputMethodManager;
 
-import com.netsun.labuy.LoginActivity;
+import com.netsun.labuy.activity.LoginActivity;
+import com.netsun.labuy.db.Goods;
 import com.netsun.labuy.db.ReceiveAddress;
-import com.netsun.labuy.db.ShoppingItem;
+import com.netsun.labuy.gson.Merchandise;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,10 +38,26 @@ import static com.netsun.labuy.utils.MyApplication.token;
  */
 
 public class PublicFunc {
+    public static final int HANDLER_CODE_EDIT_OPTION = 1; //编辑商品属性的handler标识
+    public static final int HANDLER_CODE_REFRESH_SHOPPINGCART = 2;//刷新购物车
     public static String work = "search_yq_by_cate_id";
     private static ProgressDialog progressDialog;
     public static String host = "http://www.dev.labuy.cn/";
 
+    //分类检索预定义
+    public static final int LEVEL_FIRST = 0;
+    public static final int LEVEL_SECOND = 1;
+    public static final int LEVEL_THIRD = 2;
+
+    //商品类型
+    public static final String DEVICER = "device";
+    public static final String PART = "parts";
+    public static final String METHOD = "method";
+    //查询商品列表类型预定义
+    public static final int SEARCH_BY_ID = 1;
+    public static final int SEARCH_BY_KEY = 2;
+
+    //
     public static final int REQUEST_SETTINGS = 5;
 
     /**
@@ -68,7 +88,7 @@ public class PublicFunc {
         activity.startActivityForResult(intent, 1);
     }
 
-    public static void saveData(String account, String password, String aToken) {
+    public static void saveUserData(String account, String password, String aToken) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("account", account);
@@ -110,11 +130,16 @@ public class PublicFunc {
         JSONObject root = new JSONObject();
         try {
             JSONArray list = new JSONArray();
-            for (ShoppingItem item : orderInfo.getShoppingItems()) {
+            for (Goods item : orderInfo.getShoppingItems()) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("goodsId", item.getGoodsId())
                         .put("goodsNum", item.getNum())
                         .put("goodsAttr", item.getOptions());
+                if (item.getGoods_type() == PublicFunc.DEVICER)
+                    jsonObject.put("goodsType","device");
+                else
+                    jsonObject.put("goodsType","parts");
+
                 list.put(jsonObject);
             }
             root.put("addrId", orderInfo.getAddressId())
@@ -148,11 +173,12 @@ public class PublicFunc {
             if (response != null) {
                 result = Utility.handleLoginResponse(response.body().string());
                 if (result) {
-                    saveData(Base64.encodeToString(account.getBytes(), Base64.DEFAULT),
+                    saveUserData(Base64.encodeToString(account.getBytes(), Base64.DEFAULT),
                             Base64.encodeToString(password.getBytes(), Base64.DEFAULT),
                             Base64.encodeToString(token.getBytes(), Base64.DEFAULT));
-                    isLogon = true;
+
                 }
+                isLogon = result;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -162,27 +188,33 @@ public class PublicFunc {
 
     /**
      * 账号登出
-     *
-     * @param listener
      */
     public static void logout(final LogoutListener listener) {
         String[] arr = getUserAndPassword();
         if (arr == null) return;
-        String url = PublicFunc.host + "app.php/Auth?name=" + arr[0] + "&token=" + token;
+        final String url = PublicFunc.host + "app.php/Auth?name=" + arr[0] + "&token=" + token;
         LogUtils.d(MyApplication.TAG, url);
         HttpUtils.get(url, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (listener != null)
                     listener.onLogoutResult(false);
-//                e.printStackTrace();
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String str = response.body().string();
+                String sResponse = response.body().string();
+                boolean result = Utility.handleLogoutResponse(sResponse);
+                if (result) {
+                    MyApplication.token = null;
+                    MyApplication.isLogon = false;
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("token", token);
+                    editor.commit();
+                }
                 if (listener != null)
-                    listener.onLogoutResult(Utility.handleLogoutResponse(str));
+                    listener.onLogoutResult(result);
             }
         });
 
@@ -234,7 +266,7 @@ public class PublicFunc {
 
         } else {
             body = new FormBody.Builder()
-                      .add("token", token)
+                    .add("token", token)
                     .add("name", PublicFunc.getUserAndPassword()[0])
                     .add("consignee", address.getConsignee())
                     .add("mobile", address.getMobile())
@@ -295,5 +327,53 @@ public class PublicFunc {
             return Utility.handleCountyResponse(sRes, null);
         }
         return false;
+    }
+
+    /**
+     * 获取商品详细信息
+     *
+     * @param yq_id
+     * @param handler
+     */
+    public static void getMerchandise(final String mode, final String yq_id, final Handler handler) {
+
+        String url = null;
+        if (mode.equals(DEVICER))
+            url = PublicFunc.host + "app.php/Yq?model=device&id=" + yq_id;
+        else if (mode.equals(PART))
+            url = PublicFunc.host + "app.php/Parts?model=parts&id=" + yq_id;
+        else  url = "";
+        LogUtils.d(MyApplication.TAG, url);
+        HttpUtils.get(url, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String resText = response.body().string();
+                Merchandise merchandise = Utility.handleMerchandiseResponse(resText);
+                if (merchandise != null) {
+                    merchandise.caterory_type = mode;
+                    merchandise.id = yq_id;
+                    if (handler != null) {
+                        Message msg = new Message();
+                        msg.what = 1;
+                        msg.obj = merchandise;
+                        handler.sendMessage(msg);
+                    }
+                }
+            }
+        });
+    }
+
+    public static void closeKeyBoard(Activity activity) {
+        if (activity == null) return;
+        ;
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
+        }
     }
 }

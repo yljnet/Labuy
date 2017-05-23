@@ -4,7 +4,7 @@ import com.netsun.labuy.db.City;
 import com.netsun.labuy.db.County;
 import com.netsun.labuy.db.Province;
 import com.netsun.labuy.db.ReceiveAddress;
-import com.netsun.labuy.db.ShoppingItem;
+import com.netsun.labuy.db.Goods;
 
 import org.litepal.crud.DataSupport;
 
@@ -83,8 +83,8 @@ public class HandleDataBase {
     }
 
     public static void deleteShoppingCartItem(String goodsid){
-        List<ShoppingItem> items = DataSupport.where("goodsId=?", goodsid).find(ShoppingItem.class);
-        for (ShoppingItem item:items){
+        List<Goods> items = DataSupport.where("goodsId=?", goodsid).find(Goods.class);
+        for (Goods item:items){
             item.delete();
         }
     }

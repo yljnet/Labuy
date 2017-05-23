@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="modes">
+        <item>仪器</item>
+        <item>耗材配件</item>
+    </string-array>
+</resources>

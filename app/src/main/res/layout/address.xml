@@ -25,7 +25,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="收件人：虞礼江"
             android:textSize="16sp" />
 
         <TextView
@@ -35,7 +34,6 @@
             android:layout_alignParentRight="true"
             android:layout_marginTop="5dp"
             android:layout_toLeftOf="@id/id_select_addr_cb"
-            android:text="12345678998"
             android:textSize="16sp" />
 
         <TextView
@@ -45,8 +43,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="6dp"
             android:layout_toLeftOf="@id/id_select_addr_cb"
-            android:padding="2dp"
-            android:text="收货地址：浙江省杭州市拱墅区莫干山路187号易盛大厦11楼技术部" />
+            android:padding="2dp"/>
 
         <View
             android:layout_width="match_parent"

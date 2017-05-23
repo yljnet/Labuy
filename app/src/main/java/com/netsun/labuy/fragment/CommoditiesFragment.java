@@ -1,15 +1,10 @@
 package com.netsun.labuy.fragment;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,26 +12,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.netsun.labuy.R;
-import com.netsun.labuy.SearchYQByKeyActivity;
-import com.netsun.labuy.adapter.CommodityAdapter;
 import com.netsun.labuy.adapter.MenuItemAdapter;
 import com.netsun.labuy.db.First;
 import com.netsun.labuy.db.Second;
 import com.netsun.labuy.db.Third;
-import com.netsun.labuy.gson.Commodity;
-import com.netsun.labuy.gson.YQList;
 import com.netsun.labuy.utils.HttpUtils;
 import com.netsun.labuy.utils.LogUtils;
 import com.netsun.labuy.utils.MyApplication;
 import com.netsun.labuy.utils.PublicFunc;
-import com.netsun.labuy.utils.SpaceItemDecoration;
-import com.netsun.labuy.utils.UpRefreshLayout;
 import com.netsun.labuy.utils.Utility;
 
 import org.litepal.crud.DataSupport;
@@ -49,39 +36,27 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static com.netsun.labuy.utils.PublicFunc.LEVEL_FIRST;
+import static com.netsun.labuy.utils.PublicFunc.LEVEL_SECOND;
+import static com.netsun.labuy.utils.PublicFunc.LEVEL_THIRD;
 import static com.netsun.labuy.utils.PublicFunc.closeProgress;
 
 /**
  * Created by Administrator on 2017/2/27.
  */
 
-public class CommoditiesFragment extends Fragment implements View.OnTouchListener{
-    public static final int LEVEL_FIRST = 0;
-    public static final int LEVEL_SECOND = 1;
-    public static final int LEVEL_THIRD = 2;
+public class CommoditiesFragment extends Fragment implements View.OnTouchListener {
+
 
     private View view;
     private DrawerLayout drawerLayout;
-    private RecyclerView commoditiesView;
     private ImageView checkImage;
-    private TextView searchTextView;
-    private UpRefreshLayout refreshLayout;
-    private RelativeLayout failLayout;
     private ListView mLeftMenu;
     private View mLeftHeadView;
     private ImageView mLeftMenuHeadImage;
     private TextView mLeftMenuHeadTitleTextView;
-    private TextView toTopButton;
-    GridLayoutManager gridLayoutManager;
 
-    /**
-     * 这里是商品列表属性
-     */
-    private String cate_id;
-    private String product;
-    private List<Commodity> commodityList = new ArrayList<Commodity>();
-    private CommodityAdapter adapter;
-    private int currentPage = 1;
+
 
     /**
      * 以下是分类菜单属性
@@ -114,7 +89,6 @@ public class CommoditiesFragment extends Fragment implements View.OnTouchListene
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        commoditiesView.setOnTouchListener(this);
         checkImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,25 +96,9 @@ public class CommoditiesFragment extends Fragment implements View.OnTouchListene
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-        searchTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), SearchYQByKeyActivity.class);
-                startActivity(intent);
-            }
-        });
 
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                currentPage++;
-                if (TextUtils.equals(PublicFunc.work, "search_yq_by_cate_id")) {
-                    searchYQByCateId(currentPage, cate_id);
-                } else if (TextUtils.equals("search_qy_by_key", PublicFunc.work)) {
-                    searchYQByName(currentPage, product);
-                }
-            }
-        });
+
+
 
         leftMenuAdapter = new MenuItemAdapter(drawerLayout.getContext(), dataList);
         mLeftMenu.setAdapter(leftMenuAdapter);
@@ -159,10 +117,10 @@ public class CommoditiesFragment extends Fragment implements View.OnTouchListene
                         break;
                     case LEVEL_THIRD:
                         selectedThird = thirdTypes.get(i - 1);
-                        cate_id = selectedThird.getId();
-                        commodityList.clear();
-                        currentPage = 1;
-                        searchYQByCateId(currentPage, cate_id);
+//                        cate_id = selectedThird.getId();
+//                        commodityList.clear();
+//                        currentPage = 1;
+//                        searchYQByCateId(currentPage, cate_id);
                         drawerLayout.closeDrawers();
                         break;
                     default:
@@ -185,27 +143,6 @@ public class CommoditiesFragment extends Fragment implements View.OnTouchListene
                 }
             }
         });
-        toTopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                commoditiesView.getLayoutManager().smoothScrollToPosition(commoditiesView, null, 0);
-            }
-        });
-        commoditiesView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                switch (newState) {
-                    case RecyclerView.SCROLL_STATE_IDLE:
-                        Glide.with(getActivity()).resumeRequests();
-                        break;
-                    case RecyclerView.SCROLL_STATE_DRAGGING:
-                        Glide.with(getActivity()).pauseRequests();
-                        break;
-                    case RecyclerView.SCROLL_STATE_SETTLING:
-                        Glide.with(getActivity()).pauseRequests();
-                }
-            }
-        });
         queryFirst();
 
 
@@ -223,156 +160,11 @@ public class CommoditiesFragment extends Fragment implements View.OnTouchListene
         mLeftMenuHeadTitleTextView = (TextView) mLeftHeadView.findViewById(R.id.id_head_text_view);
         mLeftMenuHeadImage.setVisibility(View.GONE);
         mLeftMenu.addHeaderView(mLeftHeadView);
-        commoditiesView = (RecyclerView) view.findViewById(R.id.recycle_view);
         checkImage = (ImageView) view.findViewById(R.id.check_image);
-        searchTextView = (TextView) view.findViewById(R.id.search_edit);
-        refreshLayout = (UpRefreshLayout) view.findViewById(R.id.refresh_layout);
-        gridLayoutManager = new GridLayoutManager(getActivity(), 2);
-        commoditiesView.setLayoutManager(gridLayoutManager);
-        adapter = new CommodityAdapter(commodityList);
-        commoditiesView.setAdapter(adapter);
-        commoditiesView.addItemDecoration(new SpaceItemDecoration(getResources().getDimensionPixelSize(R.dimen.grid_space)));
-        toTopButton = (TextView) view.findViewById(R.id.id_button_to_top);
-        failLayout = (RelativeLayout) view.findViewById(R.id.id_search_fail_layout);
-        if (TextUtils.equals(PublicFunc.work, "search_yq_by_cate_id")) {
-            searchYQByCateId(1, "11");
-        } else if (TextUtils.equals(PublicFunc.work, "search_qy_by_key")) {
-            Intent intent = getActivity().getIntent();
-            if (null != intent) {
-                String name = intent.getStringExtra("name");
-                searchYQByName(1, name);
-            }
-        }
         return view;
     }
 
-    public void searchYQByCateId(final int pageId, String cate) {
-        currentPage = pageId;
-        cate_id = cate;
-        String url = "http://www.dev.labuy.cn/app.php/Yq?model=device&page=" +
-                pageId + "&fid=" + cate;
-        LogUtils.d(MyApplication.TAG, url);
-        PublicFunc.showProgress(getActivity());
-        HttpUtils.get(url, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                PublicFunc.closeProgress();
-                refreshLayout.refreshFinish(UpRefreshLayout.REFRESH_FAIL);
-                if (pageId == 1) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            refreshLayout.setVisibility(View.GONE);
-                            failLayout.setVisibility(View.VISIBLE);
-                        }
-                    });
-                } else
-                    currentPage--;
-                e.printStackTrace();
-            }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                PublicFunc.closeProgress();
-                String restext = response.body().string();
-                LogUtils.d(MyApplication.TAG, restext);
-                final YQList yqList = Utility.handleYQListResponse(restext);
-                if (200 == yqList.code && yqList.commodities != null) {
-                    LogUtils.d(MyApplication.TAG, "" + yqList.commodities.size());
-                    final int index = commodityList.size();
-                    for (int i = 0; i < yqList.commodities.size(); i++) {
-                        commodityList.add(yqList.commodities.get(i));
-                    }
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            refreshLayout.setVisibility(View.VISIBLE);
-                            failLayout.setVisibility(View.GONE);
-                            commoditiesView.getLayoutManager().smoothScrollToPosition(commoditiesView, null, index);
-                            adapter.notifyDataSetChanged();
-                            refreshLayout.refreshFinish(UpRefreshLayout.REFRESH_SUCCESS);
-
-                        }
-                    });
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (pageId == 1) {
-                                refreshLayout.setVisibility(View.GONE);
-                                failLayout.setVisibility(View.VISIBLE);
-                            } else {
-                                currentPage--;
-                                refreshLayout.refreshFinish(UpRefreshLayout.REFRESH_FAIL);
-                                Toast.makeText(getActivity(), "没有更多商品了", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    public void searchYQByName(final int pageId, String yqName) {
-        product = yqName;
-        currentPage = pageId;
-        String url = "http://www.dev.labuy.cn/app.php/Yq?model=device&page=" + pageId + "&product=" + yqName;
-        LogUtils.d(MyApplication.TAG, url);
-        PublicFunc.showProgress(getActivity());
-        HttpUtils.get(url, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                PublicFunc.closeProgress();
-                if (pageId == 1) {
-                    refreshLayout.setVisibility(View.GONE);
-                    failLayout.setVisibility(View.VISIBLE);
-                } else {
-                    currentPage--;
-                }
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                PublicFunc.closeProgress();
-                String restext = response.body().string();
-                LogUtils.d(MyApplication.TAG, restext);
-                final YQList yqList = Utility.handleYQListResponse(restext);
-                if (200 == yqList.code && yqList.commodities != null) {
-                    LogUtils.d(MyApplication.TAG, "" + yqList.commodities.size());
-                    final int index = commodityList.size();
-                    for (int i = 0; i < yqList.commodities.size(); i++) {
-                        commodityList.add(yqList.commodities.get(i));
-                    }
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            refreshLayout.setVisibility(View.VISIBLE);
-                            failLayout.setVisibility(View.GONE);
-                            commoditiesView.getLayoutManager().smoothScrollToPosition(commoditiesView, null, index);
-                            adapter.notifyDataSetChanged();
-                            refreshLayout.refreshFinish(UpRefreshLayout.REFRESH_SUCCESS);
-                        }
-                    });
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (pageId == 1) {
-                                refreshLayout.setVisibility(View.GONE);
-                                failLayout.setVisibility(View.VISIBLE);
-                            } else {
-                                currentPage--;
-                                refreshLayout.refreshFinish(UpRefreshLayout.REFRESH_FAIL);
-                                Toast.makeText(getActivity(), "没有更多商品了", Toast.LENGTH_SHORT).show();
-                            }
-
-                        }
-                    });
-                }
-            }
-        });
-    }
 
     /**
      * 查询一级类，优先从数据库查询，如果没有再到服务器上查询
@@ -485,10 +277,6 @@ public class CommoditiesFragment extends Fragment implements View.OnTouchListene
         });
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-    }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {

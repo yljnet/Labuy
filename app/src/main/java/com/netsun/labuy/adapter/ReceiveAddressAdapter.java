@@ -2,10 +2,11 @@ package com.netsun.labuy.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -105,10 +106,14 @@ public class ReceiveAddressAdapter extends RecyclerView.Adapter<ReceiveAddressAd
             holder.deleteTV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Snackbar.make(holder.addrLayout, "确定要删除这个地址吗？", Snackbar.LENGTH_LONG)
-                            .setAction("确定", new View.OnClickListener() {
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+                    dialog
+                            .setTitle("提示")
+                            .setMessage("确定要删除这个地址吗？")
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(View view) {
+                                public void onClick(DialogInterface dialogInterface, int i) {
                                     ReceiveAddress address = addressList.get(holder.getAdapterPosition());
                                     if (onAddressRemove != null) {
                                         onAddressRemove.onRemove(address);

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
     <dbname value="labuy" />
-    <version value="2" />
+    <version value="1" />
     <list>
         <mapping class="com.netsun.labuy.db.First" />
         <mapping class="com.netsun.labuy.db.Second" />
         <mapping class="com.netsun.labuy.db.Third" />
         <mapping class="com.netsun.labuy.db.SearchHistory" />
-        <mapping class="com.netsun.labuy.db.ShoppingItem" />
+        <mapping class="com.netsun.labuy.db.Goods" />
         <mapping class="com.netsun.labuy.db.ReceiveAddress" />
         <mapping class="com.netsun.labuy.db.Province" />
         <mapping class="com.netsun.labuy.db.City" />

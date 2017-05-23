@@ -41,52 +41,6 @@
                 android:textColorHint="#fff" />
         </LinearLayout>
 
-        <com.netsun.labuy.utils.UpRefreshLayout
-            android:id="@+id/refresh_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"
-            android:visibility="visible">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycle_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true" />
-
-            <TextView
-                android:id="@+id/id_button_to_top"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_margin="10dp"
-                android:background="@drawable/fab"
-                android:drawableTop="@drawable/ic_vertical_align_top_black_18dp"
-                android:gravity="center"
-                android:paddingBottom="11dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="11dp"
-                android:text="顶部"
-                android:textSize="11sp" />
-        </com.netsun.labuy.utils.UpRefreshLayout>
-
-        <RelativeLayout
-            android:id="@+id/id_search_fail_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="非常抱歉，未找到你需要查看的商品"
-                android:textSize="40sp" />
-        </RelativeLayout>
     </android.support.design.widget.CoordinatorLayout>
 
     <ListView

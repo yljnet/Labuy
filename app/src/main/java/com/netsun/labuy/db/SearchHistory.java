@@ -9,6 +9,7 @@ import org.litepal.crud.DataSupport;
 public class SearchHistory extends DataSupport {
     private int id;
     private String message;
+    private String mode;
 
     public int getId() {
         return id;
@@ -24,5 +25,13 @@ public class SearchHistory extends DataSupport {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 }

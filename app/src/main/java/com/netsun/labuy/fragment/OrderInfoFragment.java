@@ -16,15 +16,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.netsun.labuy.ManageAddressActivity;
 import com.netsun.labuy.R;
+import com.netsun.labuy.activity.ManageAddressActivity;
 import com.netsun.labuy.adapter.ShoppingCartItemAdapter;
+import com.netsun.labuy.db.Goods;
 import com.netsun.labuy.db.ReceiveAddress;
-import com.netsun.labuy.db.ShoppingItem;
 import com.netsun.labuy.utils.HandleDataBase;
 import com.netsun.labuy.utils.PublicFunc;
 import com.netsun.labuy.utils.SpaceItemDecoration;
-
 import java.util.ArrayList;
 
 /**
@@ -46,7 +45,7 @@ public class OrderInfoFragment extends Fragment {
     View view;
     int currentType = TYPE_VIEW_ORDER;
     ReceiveAddress currentAddr;
-    ArrayList<ShoppingItem> shoppings = null;
+    ArrayList<Goods> goodsList = null;
 
     @Nullable
     @Override
@@ -54,7 +53,7 @@ public class OrderInfoFragment extends Fragment {
         view = inflater.inflate(R.layout.layout_order_info, container, false);
         initView(view);
         if (currentAddr != null) {
-            consigneeTextView.setText(currentAddr.getConsignee());
+            consigneeTextView.setText("收件人："+currentAddr.getConsignee());
             if (currentAddr.getMobile() != null && !currentAddr.getMobile().isEmpty())
                 mobileTextView.setText(currentAddr.getMobile());
             else
@@ -67,7 +66,7 @@ public class OrderInfoFragment extends Fragment {
         }
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         orderListView.setLayoutManager(layoutManager);
-        ShoppingCartItemAdapter adapter = new ShoppingCartItemAdapter(shoppings);
+        ShoppingCartItemAdapter adapter = new ShoppingCartItemAdapter(goodsList);
         adapter.setStyle(ShoppingCartItemAdapter.STYLE_ORDER);
         orderListView.setAdapter(adapter);
         int space = getResources().getDimensionPixelSize(R.dimen.space_two);
@@ -135,8 +134,8 @@ public class OrderInfoFragment extends Fragment {
         return remarkEDIT.getText().toString();
     }
 
-    public void setShoppingList(ArrayList<ShoppingItem> list) {
-        this.shoppings = list;
+    public void setShoppingList(ArrayList<Goods> list) {
+        this.goodsList = list;
     }
 
 

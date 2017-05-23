@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-import com.netsun.labuy.db.ShoppingItem;
+import com.netsun.labuy.db.Goods;
 
 import org.litepal.crud.DataSupport;
 
@@ -19,7 +19,7 @@ public class OrderInfo extends DataSupport implements Parcelable{
     @SerializedName("order_sn")
     private String orderId;//订单编号
     @SerializedName("list")
-    private ArrayList<ShoppingItem> shoppingItems;
+    private ArrayList<Goods> goodsList;
     @SerializedName("address_id")
     private int addressId;//收货地址编号
     private String remark;//备注
@@ -33,7 +33,7 @@ public class OrderInfo extends DataSupport implements Parcelable{
 
     protected OrderInfo(Parcel in) {
         orderId = in.readString();
-        shoppingItems = in.createTypedArrayList(ShoppingItem.CREATOR);
+        goodsList = in.createTypedArrayList(Goods.CREATOR);
         addressId = in.readInt();
         remark = in.readString();
         pay_statue = in.readInt();
@@ -59,12 +59,12 @@ public class OrderInfo extends DataSupport implements Parcelable{
         this.orderId = orderId;
     }
 
-    public ArrayList<ShoppingItem> getShoppingItems() {
-        return shoppingItems;
+    public ArrayList<Goods> getShoppingItems() {
+        return goodsList;
     }
 
-    public void setShoppingItems(ArrayList<ShoppingItem> shoppingItems) {
-        this.shoppingItems = shoppingItems;
+    public void setShoppingItems(ArrayList<Goods> goodsList) {
+        this.goodsList = goodsList;
     }
 
     public int getAddressId() {
@@ -99,7 +99,7 @@ public class OrderInfo extends DataSupport implements Parcelable{
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(orderId);
-        parcel.writeTypedList(shoppingItems);
+        parcel.writeTypedList(goodsList);
         parcel.writeInt(addressId);
         parcel.writeString(remark);
         parcel.writeInt(pay_statue);

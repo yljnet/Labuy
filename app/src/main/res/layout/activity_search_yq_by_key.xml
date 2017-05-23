@@ -5,58 +5,77 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <include
+        android:id="@id/toolbar"
+        layout="@layout/layout_toolbar" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/secondary_text_dark" />
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/id_key_back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:src="@drawable/back" />
-
-        <TextView
+        <Button
             android:id="@+id/id_key_button_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="搜索"
-            android:textSize="20sp" />
+            android:layout_alignParentRight="true"
+            android:background="@null"
+            android:text="搜索" />
 
-        <android.support.design.widget.TextInputLayout
+        <RadioGroup
+            android:id="@+id/radio_group"
+            android:layout_toLeftOf="@id/id_key_button_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checkedButton="@+id/devicer_rb"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/devicer_rb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="仪器" />
+
+            <RadioButton
+                android:id="@+id/part_rb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="耗材配件" />
+
+            <RadioButton
+                android:id="@+id/method_rb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="应用方法" />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/key_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/id_key_button_search"
-            android:layout_toRightOf="@id/id_key_back_button">
-
-            <AutoCompleteTextView
-                android:id="@+id/key_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:drawableLeft="@drawable/search"
-                android:hint="请输入搜索关键字"
-                android:imeActionLabel="搜索"
-                android:inputType="text"
-                android:lines="1" />
-        </android.support.design.widget.TextInputLayout>
+            android:layout_below="@id/radio_group"
+            android:drawableLeft="@drawable/ic_search_black_24dp"
+            android:hint="请输入搜索关键字"
+            android:imeActionLabel="搜索"
+            android:inputType="text"
+            android:lines="1" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@id/key_edit_text"
             android:background="@color/cardview_dark_background" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <TextView
